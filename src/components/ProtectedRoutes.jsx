@@ -1,23 +1,19 @@
-import React, { useEffect, useState } from 'react'
+import React from "react";
+import { Navigate, Outlet, useLocation } from "react-router-dom";
 
 const ProtectedRoutes = () => {
+  const location = useLocation();
+  
+  // Only check for token existence
+  const token = localStorage.getItem("token");
 
-  const [isValid, setIsValid] = useState(null);
+  if (!token) {
+    // If no token, redirect to login
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-  useEffect(() => {
-    const verifyToken = async () => {
-      try {
-        const token = localStorage.getItem('token');
+  // If token exists, allow access to protected routes
+  return <Outlet />;
+};
 
-      } catch (error) {
-        
-      }
-    }
-  }, [])
-
-  return (
-    <div>ProtectedRoutes</div>
-  )
-}
-
-export default ProtectedRoutes
+export default ProtectedRoutes;

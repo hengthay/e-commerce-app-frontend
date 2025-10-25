@@ -10,25 +10,29 @@ import Checkout from './pages/Checkout'
 import Profile from './pages/Profile'
 import OrderHistory from './pages/OrderHistory'
 import ProtectedRoutes from './components/ProtectedRoutes'
+import Navigation from './components/Navigation'
 
 const App = () => {
   return (
-    <Routes>
-      {/* Public routes */}
-      <Route path="/" element={<Home />} />
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-      <Route path="/products" element={<Products />} />
-      <Route path="/products/:id" element={<ProductDetail />} />
-      
-      {/* Protected routes - require authentication */}
-      <Route element={<ProtectedRoutes />}>
-        <Route path="/cart" element={<Cart />} />
-        <Route path="/checkout" element={<Checkout />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/orders" element={<OrderHistory />} />
-      </Route>
-    </Routes>
+    <>
+      {/* <Navigation /> */}
+      <Routes>
+        {/* Public routes */}
+        <Route path="/" index element={<Home />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/products" element={<Products />} />
+        <Route path="/products/:id" element={<ProductDetail />} />
+        
+        {/* Protected routes - require authentication */}
+        <Route element={<ProtectedRoutes />}>
+          <Route path="/cart" element={<Cart />} />
+          <Route path="/checkout" element={<Checkout />} />
+          <Route path="/profile" element={<Profile />} />
+          <Route path="/orders" element={<OrderHistory />} />
+        </Route>
+      </Routes>
+    </>
   )
 }
 
