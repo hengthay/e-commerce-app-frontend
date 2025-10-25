@@ -2,8 +2,11 @@ import { useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 import { TbDeviceDesktopShare } from "react-icons/tb";
-import { registerUser, selectAuthError } from '../features/auth/authSlice';
+import { registerUser, selectAuthError, selectAuthStatus } from '../features/auth/authSlice';
 import Swal from 'sweetalert2';
+import { PiUserFocus } from "react-icons/pi";
+import { CgRename } from "react-icons/cg";
+import EyeToggleIcon from '../components/EyeToggleIcon';
 
 const Register = () => {
 
@@ -13,11 +16,13 @@ const Register = () => {
     password: '',
   });
   const errorMessage = useSelector(selectAuthError);
+  const status = useSelector(selectAuthStatus);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [isValid, setIsValid] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isCheckedPassword, setIsCheckedPassword] = useState(false);
   // 1. State to track focus and input value
   const [focusedField, setFocusedField] = useState(null);
 
@@ -25,11 +30,24 @@ const Register = () => {
   const handleFocus = (fieldName) => setFocusedField(fieldName);
   const handleBlur = () => setFocusedField(null);
 
+  // Toggle password
+  const togglePasswordVisibility = () => setIsCheckedPassword(prev => !prev);
+
   // 3. Conditional Logic: The label should be "up" if it's focused OR if it has a value
   const shouldNameLabelFloat = focusedField === 'name' || formData.name.length > 0;
   const shouldEmailLabelFloat = focusedField === 'email' ||  formData.email.length > 0;
   const shouldPasswordLabelFloat = focusedField === 'password' ||  formData.password.length > 0;
   
+  // Validate email
+  const validateEmail = (email) => {
+    // Trim the email string to remove leading/trailing whitespace
+    const trimmedEmail = email.trim();
+    // The widely accepted standard regex pattern
+    const emailRegax = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    // Test the email string against the regex
+    return emailRegax.test(trimmedEmail);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -39,8 +57,9 @@ const Register = () => {
         setIsValid(true)
         return;
       };
-      if(!formData.email.includes('@') || !formData.email.includes('.')) {
-        setError('Email must contain @ or .');
+
+      if(!validateEmail(formData.email)) {
+        setError('Please enter a valid email address.');
         return;
       }
 
@@ -63,7 +82,7 @@ const Register = () => {
       console.log("Login failed:", error);
       setIsValid(false);
       setIsLoading(false);
-      setError('Unable to register' || error);
+      setError(error || "Unable to register account");
     }
   }
 
@@ -73,6 +92,7 @@ const Register = () => {
       [e.target.name]: e.target.value,
     });
   };
+
 
   // console.log('FormData-', formData);
   return (
@@ -113,7 +133,12 @@ const Register = () => {
               focus:outline-none focus:border-blue-600 placeholder:opacity-0 focus:placeholder:opacity-100
             '
             placeholder='Enter your name'
+            autoComplete="name"
           />
+          <CgRename 
+            onFocus={() => handleFocus('name')}
+            size={24} className={`absolute right-2 top-2 transition-colors ${shouldNameLabelFloat ? 'text-blue-400' : ''}`}
+            />
         </div>
         <div className='relative flex flex-col space-y-2 w-[250px]'>
           <label 
@@ -144,7 +169,12 @@ const Register = () => {
               focus:outline-none focus:border-blue-600 placeholder:opacity-0 focus:placeholder:opacity-100
             '
             placeholder='john@example.com'
+            autoComplete="email"
           />
+          <PiUserFocus 
+            onFocus={() => handleFocus('email')}
+            size={24} className={`absolute right-2 top-2 transition-colors ${shouldEmailLabelFloat ? 'text-blue-400' : ''}`}
+            />
         </div>
         <div className='relative flex flex-col space-y-2 w-[250px]'>
           <label 
@@ -162,7 +192,7 @@ const Register = () => {
           </label>
           <input
             name='password'
-            type="password"
+            type={isCheckedPassword ? "text" : "password"}
             id='password'
             value={formData.password} // Controlled component
             onChange={handleChange}
@@ -173,10 +203,18 @@ const Register = () => {
               focus:outline-none focus:border-blue-600 placeholder:opacity-0 focus:placeholder:opacity-100
             '
             placeholder='Enter your password'
+            autoComplete="password"
+          />
+          <EyeToggleIcon 
+            isChecked={isCheckedPassword} onClick={togglePasswordVisibility} shouldPasswordLabelFloat={shouldPasswordLabelFloat}
           />
         </div>
         <div className='flex justify-center items-center space-y-2 mx-auto w-full'>
-          <button type="submit" className='bg-black text-white w-[250px] py-1.5 rounded-md font-medium cursor-pointer border border-transparent hover:bg-transparent hover:text-black hover:border hover:border-black transition-colors ease-in-out duration-300'>
+          <button 
+          type="submit" 
+          className='bg-black text-white w-[250px] py-1.5 rounded-md font-medium cursor-pointer border border-transparent hover:bg-transparent hover:text-black hover:border hover:border-black transition-colors ease-in-out duration-300'
+          aria-label='Register button'
+          >
             {isLoading ? "loading" : "Register"}
           </button>
         </div>
@@ -188,9 +226,11 @@ const Register = () => {
           </p>
         </div>
         </form>
+        {/* API error message */}
         <div className='text-center text-red-500'>
           {errorMessage && <p>{errorMessage}</p>}
         </div>
+        {/* Error message */}
         <div className='text-center text-red-500'>
           {error && <p>{error}</p>}
         </div>

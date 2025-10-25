@@ -1,22 +1,29 @@
 import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useLocation, Link } from 'react-router-dom';
-import { loginUser, selectAuthError, selectUserToken } from '../features/auth/authSlice';
+import { loginUser, selectAuthError, selectAuthStatus, selectUserToken } from '../features/auth/authSlice';
 import Swal from 'sweetalert2';
 import { CiDesktop } from "react-icons/ci";
+import { PiUserFocus } from "react-icons/pi";
+import EyeToggleIcon from '../components/EyeToggleIcon';
+
 
 const Login = () => {
+  // State and action
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const token = useSelector(selectUserToken);
-  const error = useSelector(selectAuthError);
-  const [isValid, setIsValid] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const errorMessage = useSelector(selectAuthError);
+  const status = useSelector(selectAuthStatus);
   const [formData, setFormData] = useState({
     email: '',
     password: '',
   });
+  const [isValid, setIsValid] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(null);
+  const [isCheckedPassword, setIsCheckedPassword] = useState(false);
 
   // 1. State to track focus and input value
   const [focusedField, setFocusedField] = useState(null);
@@ -24,6 +31,9 @@ const Login = () => {
   // 2. Event Handlers
   const handleFocus = (fieldName) => setFocusedField(fieldName);
   const handleBlur = () => setFocusedField(null);
+
+  // Toggle password
+  const togglePasswordVisibility = () => setIsCheckedPassword(prev => !prev);
 
   // 3. Conditional Logic: The label should be "up" if it's focused OR if it has a value
   const shouldEmailLabelFloat = focusedField === 'email' ||  formData.email.length > 0;
@@ -38,15 +48,33 @@ const Login = () => {
     }
   }, [token, navigate, location]);
 
+  // Validate email
+  const validateEmail = (email) => {
+    // Trim the email string to remove leading/trailing whitespace
+    const trimmedEmail = email.trim();
+    // The widely accepted standard regex pattern
+    const emailRegax = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    // Test the email string against the regex
+    return emailRegax.test(trimmedEmail);
+  }
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
       setIsLoading(true);
-
+      setIsError(null);
       if(!formData.email || !formData.password) {
         setIsValid(true)
+        setIsLoading(false);
         return;
       };
+
+      // validateEmail expects the email string from formData
+      if(!validateEmail(formData.email)) {
+        setIsError('Please enter a valid email address.');
+        setIsLoading(false);
+        return;
+      }
 
       const result = await dispatch(loginUser(formData)).unwrap();
 
@@ -58,7 +86,7 @@ const Login = () => {
           icon: "success"
         });
       }
-      navigate("/");
+      navigate("/");  
     } catch (error) {
       Swal.fire({
         title: "Failed to Login",
@@ -68,7 +96,7 @@ const Login = () => {
       console.log("Login failed:", error);
       setIsValid(false);
       setIsLoading(false);
-      // setError(error || "Invalid credentials");
+      setIsError(error || "Invalid credentials");
     }
   }
 
@@ -80,7 +108,8 @@ const Login = () => {
   };
 
   // console.log('Form Data: ', formData);
-  if(error) return <p className='text-center mt-20 text-2xl underline underline-offset-4 text-gray-400 font-medium border border-dashed flex justify-center mx-auto items-center w-[700px] p-3 shadow'>The Website is cannot reload. Please try again later!</p>
+  if(errorMessage) return <p className='text-center mt-20 text-2xl underline underline-offset-4 text-gray-400 font-medium border border-dashed flex justify-center mx-auto items-center w-[700px] p-3 shadow'>The Website is cannot reload. Please try again later!</p>
+
   return (
     <section className='bg-gray-200 w-screen h-screen flex mx-auto justify-center items-center'>
       <div className='sm:w-[450px] w-[350px] mx-4 container bg-white/90 space-y-3 py-3 rounded-lg shadow-md'>
@@ -119,7 +148,11 @@ const Login = () => {
               focus:outline-none focus:border-blue-600 placeholder:opacity-0 focus:placeholder:opacity-100
             '
             placeholder='john@example.com'
+            autoComplete="email"
           />
+          <PiUserFocus 
+          onFocus={() => handleFocus('email')}
+          size={24} className={`absolute right-2 top-2 transition-colors ${shouldEmailLabelFloat ? 'text-blue-400' : ''}`}/>
         </div>
         <div className='relative flex flex-col space-y-2 w-[250px]'>
           <label 
@@ -137,7 +170,7 @@ const Login = () => {
           </label>
           <input
             name='password'
-            type="password"
+            type={isCheckedPassword ? "text" : "password"}
             id='password'
             value={formData.password} // Controlled component
             onChange={handleChange}
@@ -148,10 +181,16 @@ const Login = () => {
               focus:outline-none focus:border-blue-600 placeholder:opacity-0 focus:placeholder:opacity-100
             '
             placeholder='Enter your password'
+            autoComplete="password"
           />
+          <EyeToggleIcon isChecked={isCheckedPassword} onClick={togglePasswordVisibility} shouldPasswordLabelFloat={shouldPasswordLabelFloat}/>
         </div>
         <div className='flex justify-center items-center space-y-2 mx-auto w-full'>
-          <button type="submit" className='bg-black text-white w-[250px] py-1.5 rounded-md font-medium cursor-pointer border border-transparent hover:bg-transparent hover:text-black hover:border hover:border-black transition-colors ease-in-out duration-300'>
+          <button 
+          type="submit" 
+          className='bg-black text-white w-[250px] py-1.5 rounded-md font-medium cursor-pointer border border-transparent hover:bg-transparent hover:text-black hover:border hover:border-black transition-colors ease-in-out duration-300'
+          aria-label='Login button'
+          >
             {isLoading ? "loading" : "Login"}
           </button>
         </div>
@@ -163,8 +202,13 @@ const Login = () => {
           </p>
         </div>
         </form>
+        {/* API error message */}
         <div className='text-center text-red-500'>
-          {error && <p>{error}</p>}
+          {errorMessage && <p>{errorMessage}</p>}
+        </div>
+        {/* Error message */}
+        <div className='text-center text-red-500'>
+          {isError && <p>{isError}</p>}
         </div>
         <div className='text-center text-red-500'>
           {isValid && <p>Please fill out the fleid.</p>}
