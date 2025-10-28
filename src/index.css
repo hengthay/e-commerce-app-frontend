@@ -14,3 +14,9 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
+
+@layer components {
+  .section-container {
+    @apply container w-[1400px] mx-auto py-4 px-4 sm:px-6 lg:px-8;
+  }
+}

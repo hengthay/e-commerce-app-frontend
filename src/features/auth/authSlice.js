@@ -6,7 +6,8 @@ const initialState = {
   user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')) : null,
   token: localStorage.getItem('token') || null,
   status: 'idle',
-  error: null
+  error: null,
+  expiresAt: localStorage.getItem('expiresAt') || null
 };
 
 // Performance on User Login
@@ -19,7 +20,7 @@ export const loginUser = createAsyncThunk(
       password
     });
 
-    console.log('Login Reponses: ', res.data);
+    // console.log('Login Reponses: ', res.data);
 
     // Get user and token from response
     const { user, token } = res.data.data;
