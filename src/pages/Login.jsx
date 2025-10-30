@@ -87,26 +87,28 @@ const Login = () => {
 
       // console.log("Token received:", result.token); // should log the token
       if (result?.token) {
-        
-        const guestCartItems = JSON.parse(localStorage.getItem('cartTemp'));
-        if(guestCartItems.length > 0) {
-          await axios.post('http://localhost:3000/api/cart/sync', {
-            items: guestCartItems
-          },
-          { headers: {Authorization: `Bearer ${result.token}`} }
+        const guestCartItems =
+          JSON.parse(localStorage.getItem("cartTemp")) || [];
+
+        if (guestCartItems.length > 0) {
+          await axios.post(
+            "http://localhost:3000/api/cart/sync",
+            {
+              items: guestCartItems,
+            },
+            { headers: { Authorization: `Bearer ${result.token}` } }
           );
 
           // Remove guest cart from localstorage
-          localStorage.removeItem('cartTemp');
+          localStorage.removeItem("cartTemp");
           console.log("Guest cart synced to user cart successfully!");
-        };
-
-        Swal.fire({
-          title: "Login Successed",
-          text: "Your login is successfully",
-          icon: "success",
-        });
+        }
       }
+      Swal.fire({
+        title: "Login Successed",
+        text: "Your login is successfully",
+        icon: "success",
+      });
       navigate("/");
     } catch (error) {
       Swal.fire({
@@ -115,9 +117,10 @@ const Login = () => {
         icon: "warning",
       });
       console.log("Login failed:", error);
-      setIsValid(false);
       setIsLoading(false);
-      setIsError(error || "Invalid credentials");
+      setIsError("Invalid credentials");
+    } finally {
+      setIsError("");
     }
   };
   // Handle on change
@@ -129,12 +132,6 @@ const Login = () => {
   };
 
   // console.log('Form Data: ', formData);
-  if (errorMessage)
-    return (
-      <p className="text-center mt-20 text-2xl underline underline-offset-4 text-gray-400 font-medium border border-dashed flex justify-center mx-auto items-center w-[700px] p-3 shadow">
-        The Website is cannot reload. Please try again later!
-      </p>
-    );
 
   return (
     <section className="bg-gray-200 w-screen h-screen flex mx-auto justify-center items-center">
@@ -243,9 +240,12 @@ const Login = () => {
           </div>
         </form>
         {/* API error message */}
-        <div className="text-center text-red-500">
-          {errorMessage && <p>{errorMessage}</p>}
-        </div>
+        {errorMessage && (
+          <p className="text-center text-red-500 text-sm mt-2">
+            {errorMessage}
+          </p>
+        )}
+
         {/* Error message */}
         <div className="text-center text-red-500">
           {isError && <p>{isError}</p>}

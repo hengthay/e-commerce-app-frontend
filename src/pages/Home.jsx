@@ -9,8 +9,9 @@ import RecommendProduct from "../components/RecommendProduct";
 import { useDispatch, useSelector } from "react-redux";
 import {
   recommendedProducts,
-  selectProductStatus,
+  selectRecommendedProductError,
   selectRecommendedProducts,
+  selectRecommendedProductStatus,
 } from "../features/products/productSlice";
 import Testimonial from "../components/Testimonial";
 import { MdOutlineNavigateNext } from "react-icons/md";
@@ -46,7 +47,8 @@ const qualityMenus = [
 const Home = () => {
   const products = useSelector(selectRecommendedProducts);
   const dispatch = useDispatch();
-  const status = useSelector(selectProductStatus);
+  const status = useSelector(selectRecommendedProductStatus);
+  const errorMessage = useSelector(selectRecommendedProductError);
   // Track of index
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -83,7 +85,8 @@ const Home = () => {
     return () => clearInterval(intervalId);
   }, [testimonialsData.length]);
 
-  // console.log('Product', products)
+  // console.log('Product', products);
+
   return (
     <section className="w-full overflow-hidden">
       {/* Banner */}
@@ -114,11 +117,11 @@ const Home = () => {
         </div>
       </div>
       {/* Quality of us */}
-      <div className="section-container max-sm:w-[400px] flex flex-col justify-center items-center gap-y-4 lg:my-20 md:my-10 my-8">
+      <div className="section-container w-full mx-auto flex flex-col justify-center items-center gap-y-4 lg:my-20 md:my-10 my-8">
         <h2 className="md:text-4xl sm:text-2xl text-xl font-bold mb-4 font-sans text-gray-600">
           Why choose us?
         </h2>
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 justify-center items-center gap-8 max-sm:w-[350px] mt-2 mr-2!">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 w-full justify-center items-center gap-8 max-sm:w-[400px] mt-2 mr-2!">
           {/* Free Deliivery */}
           {qualityMenus.map((item) => {
             // Store Icons
@@ -147,58 +150,93 @@ const Home = () => {
           })}
         </div>
       </div>
+
       {/* Product Overview */}
-      <div className="section-container max-sm:w-[400px] px-4 py-4 flex flex-col justify-center md:items-start item-center gap-y-4 lg:my-20 md:my-10 my-8">
+      <div className="section-container mx-auto w-full px-4 py-4 flex flex-col justify-center md:items-start item-center gap-y-4 lg:my-20 md:my-10 my-8">
         <h3 className="md:text-4xl sm:text-2xl text-xl font-bold mb-4 font-sans text-gray-600">
           Recommended Products
         </h3>
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 justify-between gap-8 relative mr-2.5!">
-          {products.map((product) => (
-            <RecommendProduct product={product} key={product.id} />
-          ))}
-        </div>
-      </div>
-      {/* Testimonials */}
-      <div className="w-full bg-gray-100/40 py-2">
-        <div className="section-container max-sm:w-[400px] px-4 py-4 flex flex-col justify-center items-center gap-x-3 lg:my-20 md:my-10 my-8">
-        <h3 className="md:text-4xl sm:text-2xl text-xl font-bold mb-4 font-sans text-gray-600">
-          Testimonials
-        </h3>
-        {/* Carousel Wrapper */}
-        <div className="w-full max-w-6xl relative overflow-hidden mr-2.5">
-          {/* Track */}
-          <div
-            className="flex transition-transform duration-700 ease-in-out"
-            style={{
-              transform: `translateX(-${currentIndex * 100}%)`,
-            }}
-          >
-            {testimonialsData.map((testimonial) => (
-              <div
-                className="w-full shrink-0 flex justify-center items-center"
-                key={testimonial.id}
-              >
-                <Testimonial testimonial={testimonial} />
-              </div>
+        {/* If loading success */}
+        {status === "succeeded" && (
+          <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 w-full justify-between gap-8 relative mr-2.5!">
+            {products.map((product) => (
+              <RecommendProduct product={product} key={product.id} />
             ))}
           </div>
+        )}
 
-          {/* Navigation Buttons */}
-          <div className="sm:flex hidden justify-center items-center absolute top-1/2 left-0 right-0">
-            <button
-              onClick={handleOnBack}
-              className="absolute left-0 top-1/2 transform -translate-y-1/2 flex justify-center items-center w-12 h-12 bg-gray-200 rounded-full hover:bg-indigo-600 hover:text-white cursor-pointer transition-colors duration-300 ease-in-out"
-            >
-              <MdOutlineNavigateBefore size={28} />
-            </button>
-            <button
-              onClick={handleOnNext}
-              className="absolute right-0 top-1/2 transform -translate-y-1/2 flex justify-center items-center w-12 h-12 bg-gray-200 rounded-full hover:bg-indigo-600 hover:text-white cursor-pointer transition-colors duration-300 ease-in-out"
-            >
-              <MdOutlineNavigateNext size={28} />
-            </button>
+        {/* Handle Status */}
+        {status === "loading" && (
+          <div className="flex justify-center items-center h-64">
+            <p className="text-gray-700 font-medium md:text-lg text-base">
+              Loading<span className="animate-pulse">...</span>
+            </p>
           </div>
-        </div>
+        )}
+        {status === "failed" && (
+          <div className="section-container flex items-center  gap-2 p-4 rounded-md bg-red-50 border border-red-300 text-red-700 my-2 w-full mx-auto">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-6 h-8 text-red-500"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              strokeWidth={2}
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+            <p className="md:text-lg text-sm font-medium">
+              Sorry, failed to display products
+            </p>
+          </div>
+        )}
+      </div>
+
+      {/* Testimonials */}
+      <div className="w-full bg-gray-100/40 py-2">
+        <div className="section-container w-full mx-auto max-sm:w-[400px] px-4 py-4 flex flex-col justify-center items-center gap-x-3 lg:my-20 md:my-10 my-8">
+          <h3 className="md:text-4xl sm:text-2xl text-xl font-bold mb-4 font-sans text-gray-600">
+            Testimonials
+          </h3>
+          {/* Carousel Wrapper */}
+          <div className="w-full max-w-6xl relative overflow-hidden mr-3 max-sm:mr-6">
+            {/* Track */}
+            <div
+              className="flex transition-transform duration-700 ease-in-out"
+              style={{
+                transform: `translateX(-${currentIndex * 100}%)`,
+              }}
+            >
+              {testimonialsData.map((testimonial) => (
+                <div
+                  className="w-full shrink-0 flex justify-center items-center"
+                  key={testimonial.id}
+                >
+                  <Testimonial testimonial={testimonial} />
+                </div>
+              ))}
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="sm:flex hidden justify-center items-center absolute top-1/2 left-0 right-0">
+              <button
+                onClick={handleOnBack}
+                className="absolute left-0 top-1/2 transform -translate-y-1/2 flex justify-center items-center w-12 h-12 bg-gray-200 rounded-full hover:bg-indigo-600 hover:text-white cursor-pointer transition-colors duration-300 ease-in-out"
+              >
+                <MdOutlineNavigateBefore size={28} />
+              </button>
+              <button
+                onClick={handleOnNext}
+                className="absolute right-0 top-1/2 transform -translate-y-1/2 flex justify-center items-center w-12 h-12 bg-gray-200 rounded-full hover:bg-indigo-600 hover:text-white cursor-pointer transition-colors duration-300 ease-in-out"
+              >
+                <MdOutlineNavigateNext size={28} />
+              </button>
+            </div>
+          </div>
         </div>
       </div>
     </section>

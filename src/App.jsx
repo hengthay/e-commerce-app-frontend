@@ -35,12 +35,12 @@ const App = () => {
         <Route path="/register" element={<Register />} />
         <Route path="/products" element={<Products />} />
         <Route path="/products/:id" element={<ProductDetail />} />
+        <Route path="/cart" element={<Cart />} />
         <Route path='/about' element={<About />}/>
         <Route path='/contact' element={<Contact />}/>
         
         {/* Protected routes - require authentication */}
         <Route element={<ProtectedRoutes />}>
-          <Route path="/cart" element={<Cart />} />
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/orders" element={<OrderHistory />} />
