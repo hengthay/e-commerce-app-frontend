@@ -5,7 +5,7 @@ const initialState = {
   items: [],
   status: 'idle', // For normal product status
   error: null,
-  selectedItems: [],
+  selectedItems: null,
   selectedItemStatus: 'idle', // For product details status
   selectedItemError: null, 
   recommendItems: [],
@@ -51,14 +51,14 @@ export const fetchProducts = createAsyncThunk(
 );
 
 export const getProductDetailById = createAsyncThunk(
-  'products/getProductDetailById', async ({id}, thunkAPI) => {
+  'products/getProductDetailById', async (id, thunkAPI) => {
     try {
       // Send a request to backend to get product by id
       const res = await axios.get(`http://localhost:3000/api/products/${id}`);
 
       if(!res) return new Error(`Failed to get product with id:${id}`);
 
-      console.log('Product Details: ', res.data.data);
+      // console.log('Product Details: ', res.data.data);
 
       return res.data.data;
     } catch (error) {
@@ -72,7 +72,11 @@ const productsSlice = createSlice({
   name: "products",
   initialState,
   reducers: {
-
+    clearSelectedProduct: (state) => {
+      state.selectedItems = null;
+      state.selectedItemError = null;
+      state.selectedItemStatus = 'idle'
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -122,6 +126,7 @@ const productsSlice = createSlice({
 })
 
 export default productsSlice.reducer;
+export const { clearSelectedProduct } = productsSlice.actions;
 export const selectRecommendedProducts = (state) => state.products.recommendItems;
 export const selectRecommendedProductStatus = (state) => state.products.recommendItemStatus;
 export const selectRecommendedProductError = (state) => state.products.recommendItemError;
@@ -129,3 +134,5 @@ export const selectAllProductStatus = (state) => state.products.status;
 export const selectAllProductError = (state) => state.products.error;
 export const selectAllProducts = (state) => state.products.items;
 export const selectProductById = (state) => state.products.selectedItems;
+export const selectProductByIdStatus = (state) => state.products.selectedItemStatus;
+export const selectProductByIdError = (state) => state.products.selectedItemError;

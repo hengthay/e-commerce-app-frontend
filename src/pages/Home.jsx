@@ -96,7 +96,7 @@ const Home = () => {
           alt="Banner-FreeP!k"
           className="md:w-full sm:w-[400px] md:h-[80vh] h-[40vh] object-cover "
         />
-        <div className="absolute top-1/2 transform -translate-y-1/2 md:right-20 text-white group max-sm:ml-3">
+        <div className="absolute top-1/2 transform -translate-y-1/2 md:right-20 text-white max-sm:ml-3">
           <h1 className="sm:max-w-sm max-sm:w-1/2 sm:text-2xl text-xl md:text-4xl font-bold mb-4">
             Grab Upto 50% Off On Selected Items.
           </h1>
@@ -106,7 +106,7 @@ const Home = () => {
           </p>
           <Link
             to={"/products"}
-            className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition flex gap-x-1 cursor-pointer w-[150px] shadow-sm"
+            className="bg-black text-white px-6 py-3 rounded-full hover:bg-gray-800 transition flex gap-x-1 cursor-pointer w-[150px] shadow-sm group"
           >
             <MdOutlineShoppingCartCheckout
               size={24}
@@ -121,7 +121,7 @@ const Home = () => {
         <h2 className="md:text-4xl sm:text-2xl text-xl font-bold mb-4 font-sans text-gray-600">
           Why choose us?
         </h2>
-        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 w-full justify-center items-center gap-8 max-sm:w-[400px] mt-2 mr-2!">
+        <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 w-full justify-center items-center gap-8 max-sm:w-[350px] mt-2">
           {/* Free Deliivery */}
           {qualityMenus.map((item) => {
             // Store Icons

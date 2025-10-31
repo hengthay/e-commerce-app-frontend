@@ -42,8 +42,8 @@ const Products = () => {
   );
 
   return (
-    <section className="w-full bg-gray-100/40">
-      <div className="section-container mx-auto lg:my-20 md:my-15 my-10 max-sm:w-[400px] w-full md:px-4 md:py-4 flex flex-col justify-center space-y-3 ">
+    <section className="w-full bg-gray-100/40 ">
+      <div className="section-container mx-auto lg:my-20 md:my-15 my-10 max-sm:w-[350px] w-full md:px-4 md:py-4 flex flex-col justify-center space-y-3">
         <div className="flex flex-col justify-center items-center space-y-4 mt-10">
           <h4 className="md:text-3xl lg:text-5xl text-2xl font-medium text-gray-700">
             Our Products
