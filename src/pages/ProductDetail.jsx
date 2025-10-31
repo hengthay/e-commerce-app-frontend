@@ -4,6 +4,7 @@ import { clearSelectedProduct, getProductDetailById, selectProductById, selectPr
 import { Link, useParams } from "react-router-dom";
 import { selectUserToken } from "../features/auth/authSlice";
 import Swal from "sweetalert2";
+import { addGuestItems, selectCartItemsQuantity } from "../features/carts/cartSlice";
 
 const ProductDetail = () => {
 
@@ -11,6 +12,7 @@ const ProductDetail = () => {
   const product = useSelector(selectProductById);
   const status = useSelector(selectProductByIdStatus);
   const errorMessage = useSelector(selectProductByIdError);
+  const quantity = useSelector(selectCartItemsQuantity);
   // Token
   const token = useSelector(selectUserToken);
   // ProductId
@@ -35,30 +37,22 @@ const ProductDetail = () => {
   // console.log('Product', product);
   // Handle add to cart
   const handleAddToCart = async (productId) => {
-    // Case for guest user
-    if(!token) {
-      const carts = JSON.parse(localStorage.getItem("cartTemp")) || [];
-
-      // If item already exists
-      const existingCartItem = carts.find((item) => item.id === productId);
-      console.log('Exists', existingCartItem);
-      
-      if(existingCartItem) {
-        existingCartItem.quantity += 1;
-      }else {
-        carts.push({
-          id: productId,
+    try {
+      if (!token) {
+        dispatch(addGuestItems({
+          id: product.id,
           title: product.title,
           price: product.price,
           image_url: product.image_url,
           type: product.type,
-          quantity: 1,
-        })
-      };
-
-      // Set to localStorage
-      localStorage.setItem('cartTemp', JSON.stringify(carts));
-      console.log("Cart items: ", carts);
+          quantity: 1
+        }))
+      } else {
+        await dispatch(addToCart({
+          productId: product.id,
+          quantity: 1
+        })).unwrap(); // unwrap lets us catch rejected actions as errors
+      }
       // ✅ SweetAlert for guest user
       Swal.fire({
         icon: 'success',
@@ -67,10 +61,17 @@ const ProductDetail = () => {
         showConfirmButton: false,
         timer: 1500
       });
-    }else {
-      alert(`Added to cart successful with id: ${productId}`);
+    } catch (error) {
+      console.log('Error', error);
+      // Handle failed add to cart (for logged-in users)
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to Add',
+        text: error.message || 'Something went wrong',
+        showConfirmButton: true
+      });
     }
-  }
+  };
  
   return (
     <section className="w-full">
@@ -106,7 +107,7 @@ const ProductDetail = () => {
             <div className="flex items-center gap-4">
               <p className="text-gray-700 md:text-base text-sm">
                 Quantity:{" "}
-                <span className="font-semibold text-indigo-600">2</span>
+                <span className="font-semibold text-indigo-600">{quantity}</span>
               </p>
               <button 
               onClick={() => handleAddToCart(product?.id)}

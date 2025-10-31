@@ -6,9 +6,12 @@ import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
 import { logout, selectUser, selectUserToken } from "../features/auth/authSlice";
 import { useState } from "react";
+import { selectCartItemsQuantity } from "../features/carts/cartSlice";
 
 const NavBar = ({ isOpen, handleOpenMenu }) => {
   const user = useSelector(selectUser);
+  // Get cart quantity from cartSlice.
+  const quantity = useSelector(selectCartItemsQuantity);
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
@@ -120,7 +123,7 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
             <TbShoppingBagHeart size={28} />
             {/* Optional: Add a simple badge for item count */}
             <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-              3
+              {quantity}
             </span>
           </Link>
           <span className="md:flex hidden text-gray-400">|</span>

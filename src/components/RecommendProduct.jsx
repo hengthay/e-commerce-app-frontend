@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { selectUserToken } from "../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowsToEye } from "react-icons/fa6";
 import Swal from "sweetalert2";
+import { addGuestItems, addToCart } from "../features/carts/cartSlice";
 
 const RecommendProduct = ({ product }) => {
   // State
@@ -12,35 +13,30 @@ const RecommendProduct = ({ product }) => {
 
   const handleMouseOver = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   // Must user login for add to cart
   const token = useSelector(selectUserToken);
 
   // Handle Cart Click
-  const handleAddToCart = (productId) => {
-    if (!token) {
-      // Store cart for guest
-      const carts = JSON.parse(localStorage.getItem("cartTemp")) || [];
-      // Check if products existing items
-      const existingItem = carts.find((item) => item.id === productId);
+  const handleAddToCart = async (productId) => {
+    try {
+      if (!token) {
 
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        carts.push({
-          id: productId,
+        dispatch(addGuestItems({
+          id: product.id,
           title: product.title,
           price: product.price,
           image_url: product.image_url,
           type: product.type,
-          quantity: 1,
-        });
+          quantity: 1
+        }))
+      } else {
+        await dispatch(addToCart({
+          productId: product.id,
+          quantity: 1
+        })).unwrap(); // unwrap lets us catch rejected actions as errors
       }
-
-      // Set to localStorage
-      localStorage.setItem("cartTemp", JSON.stringify(carts));
-      console.log("Cart items: ", carts);
-      // alert("Item added to cart (Guest Mode)");
       // ✅ SweetAlert for guest user
       Swal.fire({
         icon: 'success',
@@ -49,9 +45,15 @@ const RecommendProduct = ({ product }) => {
         showConfirmButton: false,
         timer: 1500
       });
-      return;
-    } else {
-      alert(`Added to cart successful with id: ${productId}`);
+    } catch (error) {
+      console.log('Error', error);
+      // Handle failed add to cart (for logged-in users)
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to Add',
+        text: error.message || 'Something went wrong',
+        showConfirmButton: true
+      });
     }
   };
   // Log token

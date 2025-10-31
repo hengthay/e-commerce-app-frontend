@@ -1,10 +1,11 @@
 import React, { useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { selectUserToken } from "../features/auth/authSlice";
 import { FaArrowsToEye } from "react-icons/fa6";
 import Swal from "sweetalert2";
+import { addGuestItems } from "../features/carts/cartSlice";
 
 const ProductCard = ({ product }) => {
   // State
@@ -13,32 +14,29 @@ const ProductCard = ({ product }) => {
   const handleMouseOver = () => setIsHovered(true);
   const handleMouseLeave = () => setIsHovered(false);
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   // Must user login for add to cart
   const token = useSelector(selectUserToken);
 
   // Handle Cart Click
-  const handleAddToCart = (productId) => {
-    if (!token) {
-      // Store cart for guest
-      const carts = JSON.parse(localStorage.getItem("cartTemp")) || [];
-      // Check if products existing items
-      const existingItem = carts.find((item) => item.id === productId);
-      if (existingItem) {
-        existingItem.quantity += 1;
-      } else {
-        carts.push({
-          id: productId,
+  const handleAddToCart = async (productId) => {
+    try {
+      if (!token) {
+
+        dispatch(addGuestItems({
+          id: product.id,
           title: product.title,
           price: product.price,
           image_url: product.image_url,
           type: product.type,
-          quantity: 1,
-        });
+          quantity: 1
+        }))
+      } else {
+        await dispatch(addToCart({
+          productId: product.id,
+          quantity: 1
+        })).unwrap(); // unwrap lets us catch rejected actions as errors
       }
-
-      // Set to localStorage
-      localStorage.setItem("cartTemp", JSON.stringify(carts));
-      console.log("Cart items: ", carts);
       // ✅ SweetAlert for guest user
       Swal.fire({
         icon: 'success',
@@ -47,9 +45,15 @@ const ProductCard = ({ product }) => {
         showConfirmButton: false,
         timer: 1500
       });
-      return;
-    } else {
-      alert(`Added to cart successful with id: ${productId}`);
+    } catch (error) {
+      console.log('Error', error);
+      // Handle failed add to cart (for logged-in users)
+      Swal.fire({
+        icon: 'error',
+        title: 'Failed to Add',
+        text: error.message || 'Something went wrong',
+        showConfirmButton: true
+      });
     }
   };
   // Log token
