@@ -95,7 +95,7 @@ export const decreaseCartQuantity = createAsyncThunk(
       });
 
       console.log('Cart Quantity after decrease', refresh.data);
-      
+      // If data is undefined return empty array.
       return refresh.data.data?.items || [];
     } catch (error) {
       console.log('Erorr to decrease quantity :', error);
@@ -173,6 +173,7 @@ const cartSlice = createSlice({
     addGuestItems: (state, action) => {
       // Get cart from payload
       const item = action.payload;
+      console.log('item: ', item);
       // Find existing items in cart
       const existingItem = state.cartTempItems.find((i) => i.id === item.id);
       // If existing we increase quantity, otherwise we add new one
@@ -183,6 +184,46 @@ const cartSlice = createSlice({
       }
 
       // Update localStorage
+      localStorage.setItem('cartTemp', JSON.stringify(state.cartTempItems));
+    },
+    decreaseGuestCartQuantity: (state, action) => {
+      // Get cart from payload
+      const { productId, quantityToRemove } = action.payload;
+
+      // Find existing items in cart
+      const existingItem = state.cartTempItems.find((i) => i.id === productId);
+      // If exists decrease quantity and if quantity less than 0 or equal to 0 remove item from cart.
+      if(existingItem) {
+        existingItem.quantity -= quantityToRemove;
+
+        if(existingItem.quantity <= 0) {
+          state.cartTempItems = state.cartTempItems.filter(i => i.id !== productId);
+        }
+      }
+
+      // Update localStorage
+      localStorage.setItem('cartTemp', JSON.stringify(state.cartTempItems));
+    },
+    increaseGuestCartQuantity: (state, action) => {
+      // Get cart from payload
+      const { productId, newQuantity } = action.payload;
+      // Find existing items in cart
+      const existingItem = state.cartTempItems.find((i) => i.id === productId);
+      // If exists increase quantity
+      if(existingItem) {
+        existingItem.quantity += newQuantity;
+      }
+
+      // Update localStorage
+      localStorage.setItem('cartTemp', JSON.stringify(state.cartTempItems));
+    },
+    removeGuestItemFromCart: (state, action) => {
+      // Get productId from payload.
+      const { productId } = action.payload;
+      // Assign cartTempItems with new value.
+      state.cartTempItems = state.cartTempItems.filter(i => i.id !== productId);
+
+       // Update localStorage
       localStorage.setItem('cartTemp', JSON.stringify(state.cartTempItems));
     }
   },
@@ -260,7 +301,7 @@ const cartSlice = createSlice({
 })
 
 export default cartSlice.reducer;
-export const { loadGuestCarts, addGuestItems } = cartSlice.actions;
+export const { loadGuestCarts, addGuestItems, increaseGuestCartQuantity, decreaseGuestCartQuantity, removeGuestItemFromCart } = cartSlice.actions;
 export const selectAllCartItems = (state) => state.carts.cartItems;
 export const selectCartItemsStatus = (state) => state.carts.cartItemsStatus;
 export const selectCartItemsError = (state) => state.carts.cartItemsError;
@@ -291,18 +332,3 @@ export const selectCartSubtotal = createSelector(
     }, 0);
   }
 );
-
-// export const selectCartTotal = (state) => {
-//   const token = state.auth.token;
-//   const items = token ? state.carts.cartItems : state.carts.cartTempItems;
-//   // Subtotal
-//   const subtotal = items.reduce((acc, item) => acc + item.price * (item.quantity || 1), 0);
-//   // Get delivery price
-//   const delivery = state.carts.deliveryFee;
-
-//   return {
-//     subtotal,
-//     delivery,
-//     total: subtotal + delivery
-//   };
-// }

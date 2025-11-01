@@ -1,5 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
+import { jwtDecode } from "jwt-decode";
 
 // InitialState
 const initialState = {
@@ -31,12 +32,16 @@ export const loginUser = createAsyncThunk(
       // Properly reject with a string error
       return thunkAPI.rejectWithValue("No token received from backend");
     }
+    // Decode token and get expiry time
+    const decodedToken = jwtDecode(token);
+    const expiresAt = decodedToken.exp;
 
     localStorage.setItem("token", token);
 
     return {
       user,
-      token
+      token,
+      expiresAt
     };
   } catch (error) {
     console.log('Error to get login to page: ', error);
@@ -94,6 +99,8 @@ const authSlice = createSlice({
         state.token = action.payload.token;
         // Store user in localStorage
         localStorage.setItem('user', JSON.stringify(action.payload.user));
+        // Set expiresAt time
+        localStorage.setItem('expiresAt', action.payload.expiresAt);
       })
       .addCase(loginUser.rejected, (state, action) => {
         state.status = 'failed',

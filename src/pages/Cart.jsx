@@ -3,7 +3,7 @@ import CartCard from '../components/CartCard'
 import { Link } from 'react-router-dom'
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
-import { decreaseCartQuantity, fetchCarts, increaseCartQuantity, loadGuestCarts, removeItemFromCart, selectCartDelivery, selectCartItemsStatus, selectCartSubtotal } from '../features/carts/cartSlice';
+import { decreaseCartQuantity, decreaseGuestCartQuantity, fetchCarts, increaseCartQuantity, increaseGuestCartQuantity, loadGuestCarts, removeGuestItemFromCart, removeItemFromCart, selectCartDelivery, selectCartItemsStatus, selectCartSubtotal } from '../features/carts/cartSlice';
 import { selectUserToken } from '../features/auth/authSlice';
 
 const Cart = () => {
@@ -37,7 +37,7 @@ const Cart = () => {
     if(token) {
       await dispatch(decreaseCartQuantity({ productId ,quantityToRemove })).unwrap();
     }else {
-      alert('Guest Decrease Cart Quantity Success');
+      dispatch(decreaseGuestCartQuantity({productId, quantityToRemove}));
     }
   };
 
@@ -46,7 +46,7 @@ const Cart = () => {
     if(token) {
       await dispatch(increaseCartQuantity({ productId, newQuantity })).unwrap();
     }else {
-      alert('Guest Increase Cart Quantity Success');
+      dispatch(increaseGuestCartQuantity({ productId, newQuantity }));
     }
   }
 
@@ -55,7 +55,7 @@ const Cart = () => {
     if(token) {
       await dispatch(removeItemFromCart({ productId })).unwrap();
     }else {
-      alert('Guest Remove Item From Cart Success');
+      dispatch(removeGuestItemFromCart({ productId }));
     }
   }
   console.log('Carts: ', cartItems);
