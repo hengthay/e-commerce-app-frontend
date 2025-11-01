@@ -3,7 +3,7 @@ import CartCard from '../components/CartCard'
 import { Link } from 'react-router-dom'
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchCarts, loadGuestCarts, selectCartDelivery, selectCartItemsStatus, selectCartSubtotal } from '../features/carts/cartSlice';
+import { decreaseCartQuantity, fetchCarts, increaseCartQuantity, loadGuestCarts, removeItemFromCart, selectCartDelivery, selectCartItemsStatus, selectCartSubtotal } from '../features/carts/cartSlice';
 import { selectUserToken } from '../features/auth/authSlice';
 
 const Cart = () => {
@@ -32,6 +32,32 @@ const Cart = () => {
     }
   }, [dispatch, token]);
 
+  // Handle on Decrease Quantity
+  const handleDecreaseQuantity = async (productId, quantityToRemove) => {
+    if(token) {
+      await dispatch(decreaseCartQuantity({ productId ,quantityToRemove })).unwrap();
+    }else {
+      alert('Guest Decrease Cart Quantity Success');
+    }
+  };
+
+  // Handle on Increase quantity
+  const handleIncreaseQuantity = async (productId, newQuantity) => {
+    if(token) {
+      await dispatch(increaseCartQuantity({ productId, newQuantity })).unwrap();
+    }else {
+      alert('Guest Increase Cart Quantity Success');
+    }
+  }
+
+  // Handle on remove item from carts
+  const handleOnRemoveFromCart = async (productId) => {
+    if(token) {
+      await dispatch(removeItemFromCart({ productId })).unwrap();
+    }else {
+      alert('Guest Remove Item From Cart Success');
+    }
+  }
   console.log('Carts: ', cartItems);
 
   return (
@@ -57,7 +83,10 @@ const Cart = () => {
                 <tbody>
                   {
                     cartItems.map((item) => (
-                      <CartCard item={item} key={item.id}/>
+                      <CartCard item={item} key={item.id} handleDecreaseQuantity={handleDecreaseQuantity}
+                      handleIncreaseQuantity= {handleIncreaseQuantity}
+                      handleOnRemoveFromCart= {handleOnRemoveFromCart}
+                      />
                     ))
                   }
                 </tbody>
@@ -112,10 +141,12 @@ const Cart = () => {
                   </div>
                 </div>
                 <div className='flex my-2 w-full'>
-                  <button className='flex w-full justify-center items-center bg-black hover:bg-transparent border border-transparent text-white py-2.5 rounded-4xl font-medium transition-all shadow hover:text-black hover:border-black hover:shadow-lg cursor-pointer text-center group'>
+                  <Link 
+                  to={'/checkout'}
+                  className='flex w-full justify-center items-center bg-black hover:bg-transparent border border-transparent text-white py-2.5 rounded-4xl font-medium transition-all shadow hover:text-black hover:border-black hover:shadow-lg cursor-pointer text-center group'>
                     <span>Go to Checkout</span>
                     <IoArrowForwardSharp size={24} className='transition duration-300 transform group-hover:translate-x-2'/>
-                  </button>
+                  </Link>
                 </div>
               </div>
             </div>

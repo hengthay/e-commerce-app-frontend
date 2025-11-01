@@ -89,12 +89,16 @@ const Login = () => {
       if (result?.token) {
         const guestCartItems =
           JSON.parse(localStorage.getItem("cartTemp")) || [];
-
+        // Check if guestCartItems is greater than 0
         if (guestCartItems.length > 0) {
           await axios.post(
             "http://localhost:3000/api/cart/sync",
             {
-              items: guestCartItems,
+              // Loop through guestItem and assign productId and quantity to match backend.
+              items: guestCartItems.map((item) => ({
+                productId: item.id,
+                quantity: item.quantity
+              })),
             },
             { headers: { Authorization: `Bearer ${result.token}` } }
           );

@@ -37,13 +37,13 @@ export const fetchCarts = createAsyncThunk(
       return thunkAPI.rejectWithValue('Error to get carts: ', error);
     }
   }
-)
+);
 
 // Implement on Add to Cart function
 export const addToCart = createAsyncThunk(
   'carts/addToCart', async ({productId, quantity}, thunkAPI) => {
     try {
-       // Get user token from state
+      // Get user token from state
       const state = thunkAPI.getState();
       const token = selectUserToken(state);
       // Check if token is not represent.
@@ -71,7 +71,96 @@ export const addToCart = createAsyncThunk(
       return thunkAPI.rejectWithValue('Error to add to cart: ', error);
     }
   }
-)
+);
+
+// Implement on Decrease cart quantity function
+export const decreaseCartQuantity = createAsyncThunk(
+  'carts/decreaseCartQuantity', async ({ productId, quantityToRemove }, thunkAPI) => {
+    try {
+      console.log('Product ID: ', productId);
+      // Get user token from state
+      const state = thunkAPI.getState();
+      const token = selectUserToken(state);
+      // Check if token is not represent.
+      if(!token) return thunkAPI.rejectWithValue('No received token');
+      // Send request to backend.
+      const removeQuantity = await axios.put(`http://localhost:3000/api/cart/remove/${productId}`, {quantityToRemove: Number(quantityToRemove)}, { headers: {Authorization: `Bearer ${token}`}});
+
+      if(!removeQuantity) return new Error('Failed to decrease quantity');
+
+      console.log('Remove Quantity: ', removeQuantity.data);
+      // ✅ Fetch updated cart list
+      const refresh = await axios.get(`http://localhost:3000/api/cart`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      console.log('Cart Quantity after decrease', refresh.data);
+      
+      return refresh.data.data?.items || [];
+    } catch (error) {
+      console.log('Erorr to decrease quantity :', error);
+      return thunkAPI.rejectWithValue('Error to decrease quantity: ', error);
+    }
+  }
+);
+
+// Implement on Increase cart quantity function
+export const increaseCartQuantity = createAsyncThunk(
+  'carts/increaseCartQuantity', async ({productId, newQuantity}, thunkAPI) => {
+    try {
+      console.log('Product ID: ', productId);
+      // Get user token from state
+      const state = thunkAPI.getState();
+      const token = selectUserToken(state);
+      // Check if token is not represent.
+      if(!token) return thunkAPI.rejectWithValue('No received token');
+
+      // Send request to backend to increaseCartQuantity
+      await axios.put(`http://localhost:3000/api/cart/update/${productId}`, {newQuantity: Number(newQuantity)}, {headers: {Authorization: `Bearer ${token}`}});
+
+      const refresh = await axios.get(`http://localhost:3000/api/cart`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      console.log('Cart Quantity after increase', refresh.data);
+
+      return refresh.data.data.items;
+    } catch (error) {
+      console.log('Error to increase cart quantity :', error);
+      return thunkAPI.rejectWithValue('Error to increase cart: ', error);
+    }
+  }
+);
+
+// Implement on Delete cart quantity function
+export const removeItemFromCart = createAsyncThunk(
+  'carts/removeItemFromCart', async ({ productId }, thunkAPI) => {
+    try {
+      console.log('Product ID: ', productId);
+      // Get user token from state
+      const state = thunkAPI.getState();
+      const token = selectUserToken(state);
+      // Check if token is not represent.
+      if(!token) return thunkAPI.rejectWithValue('No received token');
+
+      const removeItemFromCart = await axios.delete(`http://localhost:3000/api/cart/delete/${productId}`, { headers: {Authorization: `Bearer ${token}`}});
+
+      if(!removeItemFromCart) return new Error('Failed to remove cart');
+      console.log('Removing Cart- ', removeItemFromCart.data);
+      
+      const refresh = await axios.get(`http://localhost:3000/api/cart`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      console.log('Cart Quantity after remove', refresh.data);
+      // ✅ Return empty array if cart not found
+      return refresh.data.data?.items || [];
+    } catch (error) {
+      console.log('Error to remove cart : ', error);
+      return thunkAPI.rejectWithValue('Error to remove cart item: ', error);
+    }
+  }
+);
 
 const cartSlice = createSlice({
   name: "carts",
@@ -127,6 +216,46 @@ const cartSlice = createSlice({
         state.cartItemsStatus = 'failed';
         state.cartItemsError = action.payload;
       })
+      .addCase(decreaseCartQuantity.pending, (state) => {
+        state.cartItemsStatus = 'loading';
+        state.cartItemsError = null;
+      })
+      .addCase(decreaseCartQuantity.fulfilled, (state, action) => {
+        state.cartItemsStatus = 'succeeded';
+        state.cartItemsError = null;
+        state.cartItems = action.payload;
+      })
+      .addCase(decreaseCartQuantity.rejected, (state, action) => {
+        state.cartItemsStatus = 'failed';
+        state.cartItemsError = action.payload;
+      })
+      .addCase(increaseCartQuantity.pending, (state) => {
+        state.cartItemsStatus = 'loading';
+        state.cartItemsError = null;
+      })
+      .addCase(increaseCartQuantity.fulfilled, (state, action) => {
+        state.cartItemsStatus = 'succeeded';
+        state.cartItemsError = null;
+        state.cartItems = action.payload;
+      })
+      .addCase(increaseCartQuantity.rejected, (state, action) => {
+        state.cartItemsStatus = 'failed';
+        state.cartItemsError = action.payload;
+      })
+      .addCase(removeItemFromCart.pending, (state) => {
+        state.cartItemsStatus = 'loading';
+        state.cartItemsError = null;
+      })
+      .addCase(removeItemFromCart.fulfilled, (state, action) => {
+        state.cartItemsStatus = 'succeeded';
+        state.cartItemsError = null;
+        state.cartItems = action.payload;
+      })
+      .addCase(removeItemFromCart.rejected, (state, action) => {
+        state.cartItemsStatus = 'failed';
+        state.cartItemsError = action.payload;
+      })
+      
   }
 })
 
@@ -142,6 +271,7 @@ export const selectCartTempItems = (state) => state.carts.cartTempItems;
 export const selectCartItemsQuantity = (state) => {
   // Get token from auth
   const token = state.auth.token;
+  // Check if token present, items is store cartItems. Otherwise store cartTempItems.
   const items = token ? state.carts.cartItems : state.carts.cartTempItems;
 
   return items.reduce((total, item) => total + (item.quantity || 1), 0);

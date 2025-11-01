@@ -24,7 +24,7 @@ const RecommendProduct = ({ product }) => {
       if (!token) {
 
         dispatch(addGuestItems({
-          id: product.id,
+          id: productId,
           title: product.title,
           price: product.price,
           image_url: product.image_url,
@@ -33,7 +33,7 @@ const RecommendProduct = ({ product }) => {
         }))
       } else {
         await dispatch(addToCart({
-          productId: product.id,
+          productId: productId,
           quantity: 1
         })).unwrap(); // unwrap lets us catch rejected actions as errors
       }
@@ -41,7 +41,7 @@ const RecommendProduct = ({ product }) => {
       Swal.fire({
         icon: 'success',
         title: 'Added to Cart',
-        text: 'Item added to cart (Guest Mode)',
+        text: 'Item added to cart',
         showConfirmButton: false,
         timer: 1500
       });

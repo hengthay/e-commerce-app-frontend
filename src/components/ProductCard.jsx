@@ -1,11 +1,11 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { selectUserToken } from "../features/auth/authSlice";
 import { FaArrowsToEye } from "react-icons/fa6";
 import Swal from "sweetalert2";
-import { addGuestItems } from "../features/carts/cartSlice";
+import { addGuestItems, addToCart } from "../features/carts/cartSlice";
 
 const ProductCard = ({ product }) => {
   // State
@@ -24,7 +24,7 @@ const ProductCard = ({ product }) => {
       if (!token) {
 
         dispatch(addGuestItems({
-          id: product.id,
+          id: productId,
           title: product.title,
           price: product.price,
           image_url: product.image_url,
@@ -33,7 +33,7 @@ const ProductCard = ({ product }) => {
         }))
       } else {
         await dispatch(addToCart({
-          productId: product.id,
+          productId: productId,
           quantity: 1
         })).unwrap(); // unwrap lets us catch rejected actions as errors
       }
@@ -41,7 +41,7 @@ const ProductCard = ({ product }) => {
       Swal.fire({
         icon: 'success',
         title: 'Added to Cart',
-        text: 'Item added to cart (Guest Mode)',
+        text: 'Item added to cart',
         showConfirmButton: false,
         timer: 1500
       });
