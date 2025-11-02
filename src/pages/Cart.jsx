@@ -34,28 +34,41 @@ const Cart = () => {
 
   // Handle on Decrease Quantity
   const handleDecreaseQuantity = async (productId, quantityToRemove) => {
-    if(token) {
-      await dispatch(decreaseCartQuantity({ productId ,quantityToRemove })).unwrap();
-    }else {
-      dispatch(decreaseGuestCartQuantity({productId, quantityToRemove}));
+    try {
+      if(token) {
+        await dispatch(decreaseCartQuantity({ productId ,quantityToRemove })).unwrap();
+      }else {
+        dispatch(decreaseGuestCartQuantity({productId, quantityToRemove}));
+      }
+    } catch (error) {
+      console.error('Failed to decrease quantity:', error);
     }
   };
 
   // Handle on Increase quantity
   const handleIncreaseQuantity = async (productId, newQuantity) => {
-    if(token) {
-      await dispatch(increaseCartQuantity({ productId, newQuantity })).unwrap();
-    }else {
-      dispatch(increaseGuestCartQuantity({ productId, newQuantity }));
+    try {
+      if(token) {
+        await dispatch(increaseCartQuantity({ productId, newQuantity })).unwrap();
+      }else {
+        dispatch(increaseGuestCartQuantity({ productId, newQuantity }));
+      }
+    } catch (error) {
+      console.log('Failed to increase quantity: ', error);
     }
+    
   }
 
   // Handle on remove item from carts
   const handleOnRemoveFromCart = async (productId) => {
-    if(token) {
-      await dispatch(removeItemFromCart({ productId })).unwrap();
-    }else {
-      dispatch(removeGuestItemFromCart({ productId }));
+    try {
+      if(token) {
+        await dispatch(removeItemFromCart({ productId })).unwrap();
+      }else {
+        dispatch(removeGuestItemFromCart({ productId }));
+      }
+    } catch (error) {
+      console.log('Failed to remove item from cart: ', error);
     }
   }
   console.log('Carts: ', cartItems);

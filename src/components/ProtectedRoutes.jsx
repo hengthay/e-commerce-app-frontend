@@ -37,6 +37,7 @@ const ProtectedRoutes = () => {
       dispatch(logout());
     }
   }, [dispatch, isTokenExpired]);
+  
   if (!token || isTokenExpired()) {
     // If no token, redirect to login
     return <Navigate to="/login" state={{ from: location }} replace />;

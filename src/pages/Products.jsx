@@ -108,9 +108,9 @@ const Products = () => {
         )}
         {status === "loading" && (
           <div className="flex justify-center items-center h-64">
-            <p className="text-gray-700 font-medium md:text-lg text-base">
-              Loading<span className="animate-pulse">...</span>
-            </p>
+            <h4 className="text-gray-700 font-medium md:text-lg text-base flex items-center gap-x-2">
+              Loading<p className="w-6 h-6 rounded-full border-b-transparent border-t-transparent border-2 border-gray-400 animate-spin"></p>
+            </h4>
           </div>
         )}
         {isError && (

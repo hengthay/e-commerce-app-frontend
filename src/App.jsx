@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -14,15 +14,29 @@ import NavBar from './components/NavBar'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Footer from './components/Footer'
+import useTokenExpiration from './components/useTokenExpiration'
+import { useDispatch } from 'react-redux'
+import { fetchCarts } from './features/carts/cartSlice'
 
 const App = () => {
   // Set hamburger button for navbar
   const [isOpen, setIsOpen] = useState(false);
-
+  // Get token from localStorage
+  const token = localStorage.getItem('token');
+  // Action
+  const dispatch = useDispatch();
   // Handle on closed hamburger
   const handleOpenMenu = () => {
     setIsOpen(!isOpen);
   };
+
+  useTokenExpiration(); // Run to check token expiration time.
+  // Fetch carts for logged user
+  useEffect(() => {
+    if(token) {
+      dispatch(fetchCarts());
+    }
+  }, [dispatch, token]);
 
   return (
     <>

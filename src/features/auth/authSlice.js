@@ -37,7 +37,7 @@ export const loginUser = createAsyncThunk(
     const expiresAt = decodedToken.exp;
 
     localStorage.setItem("token", token);
-
+    // console.log('User in auth: ', user);
     return {
       user,
       token,

@@ -5,6 +5,7 @@ import {
   loginUser,
   selectAuthError,
   selectAuthStatus,
+  selectUser,
   selectUserToken,
 } from "../features/auth/authSlice";
 import Swal from "sweetalert2";
@@ -20,7 +21,7 @@ const Login = () => {
   const location = useLocation();
   const token = useSelector(selectUserToken);
   const errorMessage = useSelector(selectAuthError);
-  const status = useSelector(selectAuthStatus);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -29,7 +30,6 @@ const Login = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(null);
   const [isCheckedPassword, setIsCheckedPassword] = useState(false);
-
   // 1. State to track focus and input value
   const [focusedField, setFocusedField] = useState(null);
 
@@ -82,8 +82,12 @@ const Login = () => {
         setIsLoading(false);
         return;
       }
+      // Copy the payload to send to backend
+      const payload = { ...formData };
+      // Clear the form immediately so Redux / network won't contain email/password in payload.
+      setFormData({ email: "", password: ""});
 
-      const result = await dispatch(loginUser(formData)).unwrap();
+      const result = await dispatch(loginUser(payload)).unwrap();
 
       // console.log("Token received:", result.token); // should log the token
       if (result?.token) {
@@ -107,6 +111,8 @@ const Login = () => {
           localStorage.removeItem("cartTemp");
           console.log("Guest cart synced to user cart successfully!");
         }
+
+        setFormData({ email: "", password: ""})
       }
       Swal.fire({
         title: "Login Successed",
