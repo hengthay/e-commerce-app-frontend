@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import ProductCard from "../components/ProductCard";
+import ProductCard from "../components/Products/ProductCard";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchProducts,
@@ -7,7 +7,7 @@ import {
   selectAllProducts,
   selectAllProductStatus,
 } from "../features/products/productSlice";
-import ErrorMessage from "../components/ErrorMessage";
+import ErrorMessage from "../components/ErrorHandle/ErrorMessage";
 
 const Products = () => {
   // Filtered products based on type

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import CartOrder from "../components/CartOrder";
+import { useState } from "react";
+import CartOrder from "../components/Carts/CartOrder";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllCartItems, selectCartDelivery, selectCartSubtotal } from "../features/carts/cartSlice";
 import { placeOrder } from "../features/orders/orderSlice";

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import {
@@ -11,7 +11,7 @@ import {
 import Swal from "sweetalert2";
 import { CiDesktop } from "react-icons/ci";
 import { PiUserFocus } from "react-icons/pi";
-import EyeToggleIcon from "../components/EyeToggleIcon";
+import EyeToggleIcon from "../components/Helpers/EyeToggleIcon";
 import axios from "axios";
 
 const Login = () => {

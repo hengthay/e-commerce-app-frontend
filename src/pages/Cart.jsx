@@ -1,5 +1,5 @@
 import { useEffect } from 'react'
-import CartCard from '../components/CartCard'
+import CartCard from '../components/Carts/CartCard'
 import { Link } from 'react-router-dom'
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';

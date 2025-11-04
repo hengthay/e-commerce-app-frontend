@@ -14,7 +14,7 @@ import NavBar from './components/NavBar'
 import About from './pages/About'
 import Contact from './pages/Contact'
 import Footer from './components/Footer'
-import useTokenExpiration from './components/useTokenExpiration'
+import useTokenExpiration from './components/Helpers/useTokenExpiration'
 import { useDispatch } from 'react-redux'
 import { fetchCarts } from './features/carts/cartSlice'
 

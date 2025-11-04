@@ -10,7 +10,7 @@ import {
 import Swal from "sweetalert2";
 import { PiUserFocus } from "react-icons/pi";
 import { CgRename } from "react-icons/cg";
-import EyeToggleIcon from "../components/EyeToggleIcon";
+import EyeToggleIcon from "../components/Helpers/EyeToggleIcon";
 
 const Register = () => {
   const [formData, setFormData] = useState({

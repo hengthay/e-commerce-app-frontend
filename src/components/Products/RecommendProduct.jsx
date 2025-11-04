@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
-import { selectUserToken } from "../features/auth/authSlice";
+import { selectUserToken } from "../../features/auth/authSlice";
 import { Link, useNavigate } from "react-router-dom";
 import { FaArrowsToEye } from "react-icons/fa6";
 import Swal from "sweetalert2";
-import { addGuestItems, addToCart } from "../features/carts/cartSlice";
+import { addGuestItems, addToCart } from "../../features/carts/cartSlice";
 
 const RecommendProduct = ({ product }) => {
   // State

@@ -2,10 +2,10 @@ import { useState } from "react";
 import { IoIosAddCircle } from "react-icons/io";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
-import { selectUserToken } from "../features/auth/authSlice";
+import { selectUserToken } from "../../features/auth/authSlice";
 import { FaArrowsToEye } from "react-icons/fa6";
 import Swal from "sweetalert2";
-import { addGuestItems, addToCart } from "../features/carts/cartSlice";
+import { addGuestItems, addToCart } from "../../features/carts/cartSlice";
 
 const ProductCard = ({ product }) => {
   // State

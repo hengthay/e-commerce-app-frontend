@@ -5,7 +5,7 @@ import { TbTruckDelivery } from "react-icons/tb";
 import { GrSecure } from "react-icons/gr";
 import { MdOutlineLocalOffer } from "react-icons/md";
 import { LiaMedalSolid } from "react-icons/lia";
-import RecommendProduct from "../components/RecommendProduct";
+import RecommendProduct from "../components/Products/RecommendProduct";
 import { useDispatch, useSelector } from "react-redux";
 import {
   recommendedProducts,
