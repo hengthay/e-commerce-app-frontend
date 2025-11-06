@@ -3,6 +3,9 @@ import CartOrder from "../components/Carts/CartOrder";
 import { useDispatch, useSelector } from "react-redux";
 import { selectAllCartItems, selectCartDelivery, selectCartSubtotal } from "../features/carts/cartSlice";
 import { placeOrder } from "../features/orders/orderSlice";
+import Paypal from "../components/Paypal";
+import Swal from "sweetalert2";
+import CheckoutButton from "../components/Checkout/CheckoutButton";
 
 const Checkout = () => {
   // Redux State
@@ -24,6 +27,26 @@ const Checkout = () => {
     fullname: "",
     email: "",
   });
+  // Onsuccess
+  const onSuccess = () => {
+    Swal.fire({
+      icon: 'success',
+      title: 'Your payment is success✅',
+      text: 'Thank you for purchasing.',
+      showConfirmButton: false,
+      timer: 1500
+    })
+  }
+
+  const onError = () => {
+    Swal.fire({
+      icon: 'error',
+      title: 'Your payment is failed❌',
+      text: 'Please retry again.',
+      showConfirmButton: false,
+      timer: 1500
+    })
+  }
 
   // Handle on change
   const handleOnChange = (e) => {
@@ -234,11 +257,7 @@ const Checkout = () => {
                 Payment Method
               </h5>
               <div className="w-full">
-                <button 
-                onClick={() => handlePlaceOrder()}
-                className="flex items-center justify-center w-full py-3 border border-blue-600 text-blue-600 rounded-md hover:bg-blue-50 transition">
-                  Place Order
-                </button>
+                <CheckoutButton formData={formData} onSuccess={onSuccess} onError={onError}/>
               </div>
             </div>
           </div>

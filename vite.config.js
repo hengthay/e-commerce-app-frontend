@@ -8,4 +8,11 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // Proxy server
+  server: {
+    proxy: {
+      '/payments': 'http://localhost:3000',
+      '/orders': 'http://localhost:3000'
+    }
+  }
 })
