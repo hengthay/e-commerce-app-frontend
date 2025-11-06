@@ -63,7 +63,10 @@ const Paypal = ({ formData, onSuccess, onError }) => {
           createOrder={async () => {
             try {
               setBusy(true);
-              const res = await api.post('/payments/paypal/create-order', {});
+              // MODIFIED LINE: Pass the formData in the request body
+              const res = await api.post('/payments/paypal/create-order', {
+                shipping_address: formData 
+              });
               const data = getData(res);
               console.log(data);
               if (!data?.id) throw new Error('No PayPal order id returned');

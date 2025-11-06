@@ -1,7 +1,11 @@
 import { useState } from "react";
 import CartOrder from "../components/Carts/CartOrder";
 import { useDispatch, useSelector } from "react-redux";
-import { selectAllCartItems, selectCartDelivery, selectCartSubtotal } from "../features/carts/cartSlice";
+import {
+  selectAllCartItems,
+  selectCartDelivery,
+  selectCartSubtotal,
+} from "../features/carts/cartSlice";
 import { placeOrder } from "../features/orders/orderSlice";
 import Paypal from "../components/Paypal";
 import Swal from "sweetalert2";
@@ -13,7 +17,7 @@ const Checkout = () => {
   const subtotal = useSelector(selectCartSubtotal);
   const delivery = useSelector(selectCartDelivery);
   const total = subtotal + delivery;
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem("token");
   console.log(cartItems);
   // Action
   const dispatch = useDispatch();
@@ -30,23 +34,23 @@ const Checkout = () => {
   // Onsuccess
   const onSuccess = () => {
     Swal.fire({
-      icon: 'success',
-      title: 'Your payment is success✅',
-      text: 'Thank you for purchasing.',
+      icon: "success",
+      title: "Your payment is success✅",
+      text: "Thank you for purchasing.",
       showConfirmButton: false,
-      timer: 1500
-    })
-  }
+      timer: 1500,
+    });
+  };
 
   const onError = () => {
     Swal.fire({
-      icon: 'error',
-      title: 'Your payment is failed❌',
-      text: 'Please retry again.',
+      icon: "error",
+      title: "Your payment is failed❌",
+      text: "Please retry again.",
       showConfirmButton: false,
-      timer: 1500
-    })
-  }
+      timer: 1500,
+    });
+  };
 
   // Handle on change
   const handleOnChange = (e) => {
@@ -59,7 +63,7 @@ const Checkout = () => {
 
   // Handle place order button
   const handlePlaceOrder = async () => {
-    if(!token) {
+    if (!token) {
       alert("Please login before placing an order!");
       return;
     }
@@ -69,21 +73,27 @@ const Checkout = () => {
         city: formData.city,
         country: formData.country,
         postal_code: formData.postal_code,
-        phone_number: formData.phone_number
-      }
+        phone_number: formData.phone_number,
+      };
 
-      if(!body.street || !body.city || !body.country || !body.postal_code || !body.phone_number) {
+      if (
+        !body.street ||
+        !body.city ||
+        !body.country ||
+        !body.postal_code ||
+        !body.phone_number
+      ) {
         alert("Please fill out the required box.");
         return;
       }
 
       await dispatch(placeOrder(body)).unwrap();
-      alert('Place order successful');
+      alert("Place order successful");
     } catch (error) {
       console.error(error);
       alert("Failed to place order!");
     }
-  }
+  };
   console.log("FormData: ", formData);
 
   return (
@@ -115,18 +125,20 @@ const Checkout = () => {
                   onChange={handleOnChange}
                 >
                   <option value="">Select a country</option>
-                  <option value="Cambodia">Cambodia</option>
-                  <option value="Japan">Japan</option>
-                  <option value="Brazil">Brazil</option>
-                  <option value="Canada">Canada</option>
-                  <option value="Germany">Germany</option>
-                  <option value="Australia">Australia</option>
-                  <option value="South-africa">South Africa</option>
-                  <option value="Mexico">Mexico</option>
-                  <option value="Italy">Italy</option>
-                  <option value="India">India</option>
-                  <option value="France">France</option>
-                  <option value="Thailand">Thailand</option>
+                  {/* CHANGE THESE VALUES */}
+                  <option value="KH">Cambodia</option>
+                  <option value="JP">Japan</option>
+                  <option value="BR">Brazil</option>
+                  <option value="CA">Canada</option>
+                  <option value="DE">Germany</option>
+                  <option value="AU">Australia</option>
+                  <option value="ZA">South Africa</option>
+                  <option value="MX">Mexico</option>
+                  <option value="IT">Italy</option>
+                  <option value="IN">India</option>
+                  <option value="FR">France</option>
+                  <option value="TH">Thailand</option>
+                  {/* Add other countries with their ISO codes */}
                 </select>
               </div>
               <div className="flex md:flex-row flex-col space-y-2 gap-x-3">
@@ -230,26 +242,30 @@ const Checkout = () => {
             {/* Cart Orders */}
             <div className="flex flex-col w-full">
               <div className="w-full space-y-3">
-                {
-                  cartItems.map((item) => (
-                    <CartOrder item={item} key={item.id}/>
-                  ))
-                }
+                {cartItems.map((item) => (
+                  <CartOrder item={item} key={item.id} />
+                ))}
               </div>
             </div>
             <hr className="text-gray-300" />
             {/* Order Totals */}
             <div className="flex justify-between items-center">
               <p className="text-base text-gray-500">Subtotal</p>
-              <p className="text-base font-semibold text-gray-800">$ {subtotal.toFixed(2)}</p>
+              <p className="text-base font-semibold text-gray-800">
+                $ {subtotal.toFixed(2)}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-base text-gray-500">Delivery Fee</p>
-              <p className="text-base font-semibold text-gray-800">{delivery === 0 ? "Free": delivery}</p>
+              <p className="text-base font-semibold text-gray-800">
+                {delivery === 0 ? "Free" : delivery}
+              </p>
             </div>
             <div className="flex justify-between items-center">
               <p className="text-base font-semibold text-gray-800">Total</p>
-              <p className="text-base font-semibold text-gray-800">$ {total.toFixed(2)}</p>
+              <p className="text-base font-semibold text-gray-800">
+                $ {total.toFixed(2)}
+              </p>
             </div>
             {/* Payment Methods */}
             <div className="flex flex-col space-y-3 pt-4">
@@ -257,7 +273,11 @@ const Checkout = () => {
                 Payment Method
               </h5>
               <div className="w-full">
-                <CheckoutButton formData={formData} onSuccess={onSuccess} onError={onError}/>
+                <CheckoutButton
+                  formData={formData}
+                  onSuccess={onSuccess}
+                  onError={onError}
+                />
               </div>
             </div>
           </div>
