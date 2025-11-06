@@ -127,6 +127,7 @@ const Checkout = () => {
                   <option value="">Select a country</option>
                   {/* CHANGE THESE VALUES */}
                   <option value="KH">Cambodia</option>
+                  <option value="US">United States</option>
                   <option value="JP">Japan</option>
                   <option value="BR">Brazil</option>
                   <option value="CA">Canada</option>
