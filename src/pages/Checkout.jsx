@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 // import Paypal from "../components/Paypal";
 import StripeCheckout from "../components/StripeCheckout";
 import axios from "axios";
+import Paypal from "../components/Paypal";
 
 const Checkout = () => {
   // Redux State
@@ -23,13 +24,13 @@ const Checkout = () => {
   console.log(cartItems);
   // State
   const [formData, setFormData] = useState({
-    street: "",
-    city: "",
-    country: "",
-    postal_code: "",
-    phone_number: "",
-    fullname: "",
-    email: "",
+    street: "Main Street 12",
+    city: "San Jose",
+    country: "US",
+    postal_code: "95313",
+    phone_number: "123456789",
+    fullname: "testing",
+    email: "testing@gmail.com",
   });
   // Onsuccess
   const onSuccess = () => {
@@ -338,13 +339,13 @@ const Checkout = () => {
                   formData={formData}
                 />
               )}
-              {/* <div className="w-full">
+              <div className="w-full">
                 <Paypal
                   formData={formData}
                   onSuccess={onSuccess}
                   onError={onError}
                 />
-              </div> */}
+              </div>
             </div>
           </div>
         </div>
