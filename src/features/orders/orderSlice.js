@@ -29,7 +29,15 @@ export const placeOrder = createAsyncThunk(
 
       if(!res) return new Error('Error to place order');
 
-      return res.data;
+       // HandleResponse wrapper pattern
+      const backendData = res.data.data || res.data;
+      console.log("✅ placeOrder backendData:", backendData);
+
+      // Return only the important payload (stripe + order)
+      return {
+        order: backendData.order,
+        stripe: backendData.stripe,
+      };
     } catch (error) {
       console.log('Error to make place order: ', error);
       return thunkAPI.rejectWithValue('Error to make a place order: ', error);

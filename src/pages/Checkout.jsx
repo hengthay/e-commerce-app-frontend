@@ -7,9 +7,10 @@ import {
   selectCartSubtotal,
 } from "../features/carts/cartSlice";
 import { placeOrder } from "../features/orders/orderSlice";
-import Paypal from "../components/Paypal";
 import Swal from "sweetalert2";
-import CheckoutButton from "../components/Checkout/CheckoutButton";
+// import Paypal from "../components/Paypal";
+import StripeCheckout from "../components/StripeCheckout";
+import axios from "axios";
 
 const Checkout = () => {
   // Redux State
@@ -18,9 +19,8 @@ const Checkout = () => {
   const delivery = useSelector(selectCartDelivery);
   const total = subtotal + delivery;
   const token = localStorage.getItem("token");
+  const [stripePayload, setStripePayload] = useState(null); // will hold { clientSecret, paymentIntentId }
   console.log(cartItems);
-  // Action
-  const dispatch = useDispatch();
   // State
   const [formData, setFormData] = useState({
     street: "",
@@ -67,8 +67,9 @@ const Checkout = () => {
       alert("Please login before placing an order!");
       return;
     }
+
     try {
-      const body = {
+      const address = {
         street: formData.street,
         city: formData.city,
         country: formData.country,
@@ -77,21 +78,69 @@ const Checkout = () => {
       };
 
       if (
-        !body.street ||
-        !body.city ||
-        !body.country ||
-        !body.postal_code ||
-        !body.phone_number
+        !address.street ||
+        !address.city ||
+        !address.country ||
+        !address.postal_code ||
+        !address.phone_number
       ) {
-        alert("Please fill out the required box.");
+        alert("Please fill out the required fields.");
         return;
       }
 
-      await dispatch(placeOrder(body)).unwrap();
-      alert("Place order successful");
-    } catch (error) {
-      console.error(error);
-      alert("Failed to place order!");
+      // Ensure cart has items
+      if (!cartItems || cartItems.length === 0) {
+        alert("Your cart is empty.");
+        return;
+      }
+      
+      // Build request body exactly as backend expects
+      const body = {
+        address,
+        cart: cartItems.map(item => ({
+          product_id: item.product_id || item.id, // match your backend product id field
+          price: item.price || item.product_price || 0,
+          quantity: item.quantity || 1,
+          title: item.title || item.name || ""
+        }))
+      };
+
+      console.log("Creating payment intent, body:", body);
+
+      // call backend
+      const res = await axios.post(
+        `http://localhost:3000/payments/stripe/create-payment-intent`,
+        body,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
+          },
+        }
+      );
+
+      console.log("create-payment-intent response:", res.data);
+
+      const data = res.data?.data || res.data;
+      if (data?.clientSecret) {
+        setStripePayload({
+          clientSecret: data.clientSecret,
+          paymentIntentId: data.paymentIntentId,
+        });
+      } else {
+        const msg = data?.message || "Failed to create payment intent";
+        alert(msg);
+        console.warn("Unexpected create-payment-intent response:", res.data);
+      }
+    } catch (err) {
+      // show helpful error information for debugging
+      console.error("handlePlaceOrder error:", err);
+      const serverMessage =
+        err?.response?.data?.message ||
+        err?.response?.data ||
+        err?.message ||
+        "Unknown error";
+      alert("Failed to place order! " + serverMessage);
     }
   };
   console.log("FormData: ", formData);
@@ -273,13 +322,29 @@ const Checkout = () => {
               <h5 className="text-gray-800 font-semibold md:text-lg text-base">
                 Payment Method
               </h5>
-              <div className="w-full">
-                <CheckoutButton
+              {!stripePayload ? (
+                <button
+                  onClick={handlePlaceOrder}
+                  className="w-full bg-indigo-600 text-white py-2 rounded-md"
+                >
+                  Place Order & Pay with Card
+                </button>
+              ) : (
+                <StripeCheckout
+                  clientSecret={stripePayload.clientSecret}
+                  orderId={stripePayload.orderId}
+                  onSuccess={onSuccess}
+                  onError={onError}
+                  formData={formData}
+                />
+              )}
+              {/* <div className="w-full">
+                <Paypal
                   formData={formData}
                   onSuccess={onSuccess}
                   onError={onError}
                 />
-              </div>
+              </div> */}
             </div>
           </div>
         </div>

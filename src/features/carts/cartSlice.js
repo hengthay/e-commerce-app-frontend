@@ -2,6 +2,7 @@ import { createAsyncThunk, createSelector, createSlice } from "@reduxjs/toolkit"
 import axios from "axios";
 import { useSelector } from "react-redux";
 import { selectUserToken } from "../auth/authSlice";
+import { placeOrder } from "../orders/orderSlice";
 
 const initialState = {
   cartItems: [],
@@ -296,7 +297,16 @@ const cartSlice = createSlice({
         state.cartItemsStatus = 'failed';
         state.cartItemsError = action.payload;
       })
-      
+      // For refetch cart after placeOrder
+      .addCase(placeOrder.fulfilled, (state, action) => {
+        console.log("✅ Order placed successfully, clearing cart...");
+
+        // Option 1: Just clear local Redux state
+        state.cartItems = [];
+        state.cartItemsStatus = "idle";
+        state.cartItemsError = null;
+        state.deliveryFee = 0;
+      })
   }
 })
 

@@ -4,7 +4,7 @@ import { clearSelectedProduct, getProductDetailById, selectProductById, selectPr
 import { Link, useParams } from "react-router-dom";
 import { selectUserToken } from "../features/auth/authSlice";
 import Swal from "sweetalert2";
-import { addGuestItems, selectCartItemsQuantity } from "../features/carts/cartSlice";
+import { addGuestItems, addToCart, selectCartItemsQuantity } from "../features/carts/cartSlice";
 
 const ProductDetail = () => {
 
@@ -40,7 +40,7 @@ const ProductDetail = () => {
     try {
       if (!token) {
         dispatch(addGuestItems({
-          id: product.id,
+          id: productId,
           title: product.title,
           price: product.price,
           image_url: product.image_url,
@@ -49,7 +49,7 @@ const ProductDetail = () => {
         }))
       } else {
         await dispatch(addToCart({
-          productId: product.id,
+          productId: productId,
           quantity: 1
         })).unwrap(); // unwrap lets us catch rejected actions as errors
       }
@@ -57,7 +57,7 @@ const ProductDetail = () => {
       Swal.fire({
         icon: 'success',
         title: 'Added to Cart',
-        text: 'Item added to cart (Guest Mode)',
+        text: 'Item added to cart',
         showConfirmButton: false,
         timer: 1500
       });
