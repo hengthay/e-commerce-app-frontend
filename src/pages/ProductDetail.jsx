@@ -119,13 +119,13 @@ const ProductDetail = () => {
               <p className="text-gray-700 md:text-base text-sm">Available Stock: <span>{product?.stock}</span></p>
               <p className="text-gray-500 leading-relaxed md:text-lg text-sm">Type: {product?.type}</p>
             </div>
-            <Link to={'/products'} className="bg-black hover:bg-transparent border border-transparent text-white py-3 px-6 rounded-lg font-medium transition-all shadow hover:text-black hover:border-black hover:shadow-lg cursor-pointer w-50 text-center">
+            <Link to={'/products'} className="bg-black hover:bg-transparent border border-transparent text-white py-3 px-6 rounded-lg font-medium transition-all shadow hover:text-black hover:border-black hover:shadow-lg cursor-pointer w-50 text-center my-1.5">
               Continue Shopping
             </Link>
             {/* Divider */}
             <hr className="border-gray-200" />
             {/* Additional mini-info list (optional enhancement) */}
-            <ul className="text-sm text-gray-500 space-y-1">
+            <ul className="text-sm text-gray-500 space-y-1.5 mt-1">
               <li>✅ Free Shipping on orders above $50</li>
               <li>✅ 7-Days Return Policy</li>
               <li>✅ Secure Payment</li>

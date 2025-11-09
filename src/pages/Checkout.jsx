@@ -24,13 +24,13 @@ const Checkout = () => {
   console.log(cartItems);
   // State
   const [formData, setFormData] = useState({
-    street: "Main Street 12",
-    city: "San Jose",
-    country: "US",
-    postal_code: "95313",
-    phone_number: "123456789",
-    fullname: "testing",
-    email: "testing@gmail.com",
+    street: "",
+    city: "",
+    country: "",
+    postal_code: "",
+    phone_number: "",
+    fullname: "",
+    email: "",
   });
   // Onsuccess
   const onSuccess = () => {

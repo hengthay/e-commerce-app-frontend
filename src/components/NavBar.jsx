@@ -4,7 +4,11 @@ import { TbShoppingBagHeart } from "react-icons/tb";
 import { IoMenu } from "react-icons/io5";
 import { MdOutlineRestaurantMenu } from "react-icons/md";
 import { useDispatch, useSelector } from "react-redux";
-import { logout, selectUser, selectUserToken } from "../features/auth/authSlice";
+import {
+  logout,
+  selectUser,
+  selectUserToken,
+} from "../features/auth/authSlice";
 import { useState } from "react";
 import { selectCartItemsQuantity } from "../features/carts/cartSlice";
 
@@ -39,8 +43,12 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
     { id: 1, label: "Home", pathName: "/" },
     { id: 2, label: "Shop", pathName: "/products" },
     { id: 3, label: "About", pathName: "/about" },
-    { id: 4, label: "Contact us", pathName: "/contact" }
+    { id: 4, label: "Contact us", pathName: "/contact" },
   ];
+
+  // Hidden search box if user is in about and contact us page.
+  const hiddenPaths = ["/about", "/contact"];
+  const searchBoxHidden = hiddenPaths.includes(location.pathname);
 
   // console.log("User", user.name);
   // If token expired logout user
@@ -64,29 +72,28 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
             </h2>
           </Link>
         </div>
-
-        {/* Search Bar - Larger, more prominent, and centered */}
-        <div className="relative grow mx-8 max-w-xl hidden md:block">
-          {" "}
-          {/* Hide on mobile, show on MD and up */}
-          <input
-            type="search"
-            name="search"
-            id="search"
-            // Full width, rounded-full for a pill shape, light gray background, and focus ring
-            className="w-full border-2 border-gray-200 bg-gray-50 rounded-full py-2 pl-4 pr-10 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition duration-300"
-            placeholder="Search products, categories, and more..."
-            onFocus={() => onFocus("search")}
-            onBlur={handleBlur}
-          />
-          <LuScanSearch
-            size={22}
-            className={`absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-indigo-600 ${
-              isFocus ? "text-indigo-600" : ""
-            }`}
-          />
-        </div>
-
+        {/* Search Bar - Larger, more prominent, and centered */}{" "}
+        {/* Hide on mobile, show on MD and up */}
+        {!searchBoxHidden && (
+          <div className="relative grow mx-8 max-w-xl hidden md:block">
+            <input
+              type="search"
+              name="search"
+              id="search"
+              // Full width, rounded-full for a pill shape, light gray background, and focus ring
+              className="w-full border-2 border-gray-200 bg-gray-50 rounded-full py-2 pl-4 pr-10 text-gray-700 placeholder-gray-400 focus:outline-none focus:border-indigo-500 transition duration-300"
+              placeholder="Search products, categories, and more..."
+              onFocus={() => onFocus("search")}
+              onBlur={handleBlur}
+            />
+            <LuScanSearch
+              size={22}
+              className={`absolute top-1/2 right-3 transform -translate-y-1/2 text-gray-500 cursor-pointer hover:text-indigo-600 ${
+                isFocus ? "text-indigo-600" : ""
+              }`}
+            />
+          </div>
+        )}
         {/* Right side - use flex and items-center for better alignment */}
         <div className="flex items-center space-x-4 max-w-xl">
           {/* Nav bar */}
@@ -199,7 +206,6 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
               </button>
             </div>
           )}
-
         </div>
       </div>
     </header>
