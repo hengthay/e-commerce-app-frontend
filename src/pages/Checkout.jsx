@@ -12,6 +12,7 @@ import Swal from "sweetalert2";
 import StripeCheckout from "../components/StripeCheckout";
 import axios from "axios";
 import Paypal from "../components/Paypal";
+import PayPalLoader from "../components/Helpers/PayPalLoader";
 
 const Checkout = () => {
   // Redux State

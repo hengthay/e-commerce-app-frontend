@@ -3,6 +3,7 @@ import { useState } from "react";
 import axios from "axios";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { useNavigate } from "react-router-dom";
+import PayPalLoader from "./Helpers/PayPalLoader";
 
 const Paypal = ({ formData, onSuccess, onError }) => {
   // 🟩 Get token for authentication and API base URL
@@ -43,7 +44,7 @@ const Paypal = ({ formData, onSuccess, onError }) => {
       </div>
     );
   }
-
+  
   return (
     <PayPalScriptProvider
       options={{
@@ -51,10 +52,11 @@ const Paypal = ({ formData, onSuccess, onError }) => {
         currency: "USD",
         intent: "capture",
         "enable-funding": "venmo,paylater",
-        "disable-funding": "credit,card",
       }}
     >
       <div>
+        {/* show loader while the SDK script is being fetched */}
+        <PayPalLoader />
         {/* 🟩 Show helpful validation messages if not logged in or missing address */}
         {!token && (
           <div className="mb-2 text-sm text-red-600">
@@ -66,7 +68,6 @@ const Paypal = ({ formData, onSuccess, onError }) => {
             Fill shipping address to enable PayPal
           </div>
         )}
-
         {/* 🟦 Show any captured error details */}
         {errorDetails && (
           <div className="mb-4 p-3 bg-red-50 border border-red-300 rounded">
@@ -74,7 +75,7 @@ const Paypal = ({ formData, onSuccess, onError }) => {
             <p className="text-xs text-red-600 mt-1">{errorDetails}</p>
           </div>
         )}
-
+        
         <PayPalButtons
           disabled={!ready || !token || busy}
           style={{ layout: "vertical", color: "gold", shape: "rect", label: "paypal" }}

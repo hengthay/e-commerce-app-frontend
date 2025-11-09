@@ -5,6 +5,7 @@ import { IoArrowForwardSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
 import { decreaseCartQuantity, decreaseGuestCartQuantity, fetchCarts, increaseCartQuantity, increaseGuestCartQuantity, loadGuestCarts, removeGuestItemFromCart, removeItemFromCart, selectCartDelivery, selectCartItemsStatus, selectCartSubtotal } from '../features/carts/cartSlice';
 import { selectUserToken } from '../features/auth/authSlice';
+import EmptyCart from '../components/Carts/EmptyCart';
 
 const Cart = () => {
   // State from redux
@@ -77,11 +78,18 @@ const Cart = () => {
     <section className='w-full bg-gray-100/50 min-h-40'>
       {/* Cart items will go here */}
       <div className='section-container max-sm:w-[350px] mt-10 flex flex-col justify-center space-y-3 mx-auto'>
-        <h1 className='mt-10 md:text-3xl lg:text-4xl text-2xl font-medium text-gray-700'>Shopping Cart</h1>
+        <h1 className="mt-12 text-4xl md:text-5xl font-bold tracking-tight text-gray-900">
+          Your Shopping Cart
+        </h1>
+        <p className="text-gray-500 mt-1 text-sm md:text-base">
+          Review your items before checkout
+        </p>
         <div className='mt-20 flex flex-row w-full mx-auto justify-center'>
           <div className='w-full max-w-6xl flex justify-center items-center flex-col mx-auto space-y-4'>
             {/* ✅ Scrollable container for small screens */}
-            <div className="w-full overflow-x-auto">
+            {
+              cartItems.length > 0 ? (
+                <div className="w-full overflow-x-auto">
               <table className="w-full table-auto min-w-[700px]">
                 <thead>
                   <tr className="border-b-2 text-gray-700">
@@ -105,6 +113,10 @@ const Cart = () => {
                 </tbody>
               </table>
             </div>
+              ): (
+                <EmptyCart />
+              )
+            }
             {/* ✅ End scrollable container */}
             {/*  */}
             <div className='my-10 flex md:flex-row flex-col w-full max-sm:w-[350px] justify-between items-start space-y-10'>
