@@ -11,6 +11,7 @@ import {
 } from "../features/auth/authSlice";
 import { useState } from "react";
 import { selectCartItemsQuantity } from "../features/carts/cartSlice";
+import { selectSearchTerm, setSearchItemName } from "../features/search/searchSlice";
 
 const NavBar = ({ isOpen, handleOpenMenu }) => {
   const user = useSelector(selectUser);
@@ -19,6 +20,8 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  // Search Term
+  const searchTerm = useSelector(selectSearchTerm);
   // const token = useSelector(selectUserToken);
   const [isOpenMenu, setIsOpenMenu] = useState(false);
   const [field, setField] = useState(null);
@@ -85,6 +88,8 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
               placeholder="Search products, categories, and more..."
               onFocus={() => onFocus("search")}
               onBlur={handleBlur}
+              value={searchTerm}
+              onChange={(e) => dispatch(setSearchItemName(e.target.value))}
             />
             <LuScanSearch
               size={22}

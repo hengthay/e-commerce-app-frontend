@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import { Link } from "react-router-dom";
 import RecommendProduct from "../components/Products/RecommendProduct";
@@ -14,11 +14,14 @@ import { MdOutlineNavigateNext } from "react-icons/md";
 import { MdOutlineNavigateBefore } from "react-icons/md";
 import testimonialsData from "../utils/testimonialsData";
 import WhyChooseUs from "../components/Helpers/WhyChooseUs";
+import { selectSearchTerm } from "../features/search/searchSlice";
+import ErrorMessage from "../components/ErrorHandle/ErrorMessage";
 
 const Home = () => {
   const products = useSelector(selectRecommendedProducts);
   const dispatch = useDispatch();
   const status = useSelector(selectRecommendedProductStatus);
+  const searchTerm = useSelector(selectSearchTerm) || "";
   const errorMessage = useSelector(selectRecommendedProductError);
   // Track of index
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -57,6 +60,16 @@ const Home = () => {
   }, [testimonialsData.length]);
 
   // console.log('Product', products);
+  // Memoize normalized search string to avoid repeated lowercasing
+  const normalizedSearch = useMemo(() => searchTerm.trim().toLowerCase(), [searchTerm]);
+  // Memoize filtered products: safe checks, uses normalizedSearch
+  const filteredProducts = useMemo(() => {
+    return products.filter((product) => {
+      const title = (product?.title || "").toLowerCase();
+      return title.includes(normalizedSearch);
+    })
+  }, [products, normalizedSearch])
+
 
   return (
     <section className="w-full overflow-hidden">
@@ -103,9 +116,13 @@ const Home = () => {
         {/* If loading success */}
         {status === "succeeded" && (
           <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 w-full justify-between gap-8 relative mr-2.5!">
-            {products.map((product) => (
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
               <RecommendProduct product={product} key={product.id} />
-            ))}
+              ))
+            ) : (
+              <ErrorMessage message="No products are found."/>
+            )}
           </div>
         )}
 
@@ -118,25 +135,7 @@ const Home = () => {
           </div>
         )}
         {status === "failed" && (
-          <div className="section-container flex items-center  gap-2 p-4 rounded-md bg-red-50 border border-red-300 text-red-700 my-2 w-full mx-auto">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-8 text-red-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p className="md:text-lg text-sm font-medium">
-              Sorry, failed to display products
-            </p>
-          </div>
+          <ErrorMessage message="Sorry, failed to display products"/>
         )}
       </div>
 

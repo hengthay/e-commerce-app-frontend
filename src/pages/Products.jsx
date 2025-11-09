@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import ProductCard from "../components/Products/ProductCard";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -8,6 +8,7 @@ import {
   selectAllProductStatus,
 } from "../features/products/productSlice";
 import ErrorMessage from "../components/ErrorHandle/ErrorMessage";
+import { selectSearchTerm } from "../features/search/searchSlice";
 
 const Products = () => {
   // Filtered products based on type
@@ -17,7 +18,8 @@ const Products = () => {
   const dispatch = useDispatch();
   const status = useSelector(selectAllProductStatus);
   const errorMessage = useSelector(selectAllProductError);
-
+  // Search Term
+  const searchTerm = useSelector(selectSearchTerm);
   // Product types
   const productTypes = ["All", "Fashion", "Kitchen & Dinning", "Home & Living"];
 
@@ -35,11 +37,20 @@ const Products = () => {
   }, [dispatch, status]);
 
   // console.log('Products: ', products);
-
-  // Filtered Label Product
-  const filteredLabel = products.filter((product) =>
-    selectedType === "All" ? product : product.type === selectedType
-  );
+  // Memoize normalized search string to avoid repeated lowercasing
+  const normalizedSearch = useMemo(() => searchTerm.trim().toLowerCase(), [searchTerm]);
+  // Filtered Product title
+  const filteredProducts = useMemo(() => {
+    // Filtered Label Product
+    const filteredByLabel = products.filter((product) => {
+      return selectedType === "All" ? product : product.type === selectedType
+    });
+    // Filtered by title
+    return filteredByLabel.filter((product) => {
+      const title = (product?.title || "").toLowerCase();
+      return title.includes(normalizedSearch)
+    })
+  }, [products, normalizedSearch, selectedType]);
 
   return (
     <section className="w-full bg-gray-100/40 ">
@@ -74,37 +85,19 @@ const Products = () => {
         {/* Product Card Rendering */}
         {status === "succeeded" && (
           <div className="grid lg:grid-cols-4 md:grid-cols-2 grid-cols-1 justify-between gap-8 relative mr-2.5!">
-            {filteredLabel.length > 0 ? (
-              filteredLabel.map((product) => (
+            {filteredProducts.length > 0 ? (
+              filteredProducts.map((product) => (
                 <ProductCard product={product} key={product.id} />
               ))
             ) : (
-              <ErrorMessage message={errorMessage} isError={isError} />
+              <ErrorMessage message="No products are found."/>
             )}
             
           </div>
         )}
         {/* Handle status */}
         {status === "failed" && (
-          <div className="section-container flex items-center gap-2 p-4 rounded-md bg-red-50 border border-red-300 text-red-700 my-10 w-full">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="w-6 h-8 text-red-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              strokeWidth={2}
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                d="M12 9v2m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p className="md:text-lg text-sm font-medium">
-              Sorry, failed to display products
-            </p>
-          </div>
+          <ErrorMessage message="Sorry, failed to display products"/>
         )}
         {status === "loading" && (
           <div className="flex justify-center items-center h-64">
