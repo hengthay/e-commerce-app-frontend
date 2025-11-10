@@ -70,9 +70,10 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
         <div className="flex shrink-0">
           <Link to={"/"}>
             {/* Use a strong primary color (e.g., indigo-600) and bolder font for a modern brand look */}
-            <h2 className="text-3xl lg:text-4xl font-extrabold text-indigo-600 hover:text-indigo-800 transition duration-300">
+            {/* <h2 className="text-3xl lg:text-4xl font-extrabold text-indigo-600 hover:text-indigo-800 transition duration-300">
               T.shop
-            </h2>
+            </h2> */}
+            <img src="../../images/navbar-logo.png" alt="" className="object-cover w-[150px] h-[50px]"/>
           </Link>
         </div>
         {/* Search Bar - Larger, more prominent, and centered */}{" "}

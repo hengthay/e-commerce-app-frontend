@@ -137,7 +137,7 @@ const Cart = () => {
                 </div>
               </div>
               {/* Cart summary */}
-              <div className='flex flex-col w-full max-w-[350px] shadow p-5 space-y-3 rounded-md'>
+              <div className='flex flex-col w-full max-w-[350px] shadow-md p-5 space-y-3 rounded-md bg-white'>
                 <h3 className='md:text-lg lg:text-xl text-base font-semibold'>Order Summary</h3>
                 <hr className='text-gray-300 my-2'/>
                 <div className='flex justify-between items-center mt-2'>
@@ -167,8 +167,14 @@ const Cart = () => {
                 </div>
                 <div className='flex my-2 w-full'>
                   <Link 
-                  to={'/checkout'}
-                  className='flex w-full justify-center items-center bg-black hover:bg-transparent border border-transparent text-white py-2.5 rounded-4xl font-medium transition-all shadow hover:text-black hover:border-black hover:shadow-lg cursor-pointer text-center group'>
+                    to={cartItems.length === 0 ? '#' : '/checkout'}
+                    onClick={(e) => {
+                      if (cartItems.length === 0) {
+                        e.preventDefault();
+                        alert('Your Cart is empty');
+                      }
+                    }}
+                    className='flex w-full justify-center items-center bg-black hover:bg-transparent border border-transparent text-white py-2.5 rounded-4xl font-medium transition-all shadow hover:text-black hover:border-black hover:shadow-lg cursor-pointer text-center group'>
                     <span>Go to Checkout</span>
                     <IoArrowForwardSharp size={24} className='transition duration-300 transform group-hover:translate-x-2'/>
                   </Link>

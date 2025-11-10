@@ -7,6 +7,9 @@ const initialState = {
   orderItems: [],
   orderItemsStatus: 'idle',
   orderItemsError: null,
+  orderItemsHistory: [],
+  orderItemsHistoryStatus: 'idle',
+  orderItemsHistoryError: null
 };
 
 // Place order
@@ -45,6 +48,31 @@ export const placeOrder = createAsyncThunk(
   }
 )
 
+// Fetch orders
+export const fetchOrdersItem = createAsyncThunk(
+  'orders/fetchOrdersItem', async (_, thunkAPI) => {
+    try {
+      // Get user token from state
+      const state = thunkAPI.getState();
+      const token = selectUserToken(state);
+      // Check if token is not represent.
+      if(!token) return thunkAPI.rejectWithValue('No received token');
+
+      // Send request to backend for fetching orders
+      const res = await axios.get('http://localhost:3000/api/orders/my', {
+        headers: { Authorization: `Bearer ${token}`}
+      });
+
+      if(!res.data) return new Error('Error to fetch orders');
+      // console.log('Order Received - ', res.data.data);
+
+      return res.data.data;
+    } catch (error) {
+      console.log('Error to fetch order items : ', error);
+      return thunkAPI.rejectWithValue('Error to fetch order items : ', error);
+    }
+  }
+)
 const orderSlice = createSlice({
   name: "orders",
   initialState,
@@ -53,6 +81,7 @@ const orderSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
+    // Place Order
       .addCase(placeOrder.pending, (state) => {
         state.orderItemsStatus = 'loading';
         state.orderItemsError = null;
@@ -66,6 +95,20 @@ const orderSlice = createSlice({
         state.orderItemsStatus = 'failed';
         state.orderItemsError = action.payload;
       })
+    // Fetch Orders
+      .addCase(fetchOrdersItem.pending, (state) => {
+        state.orderItemsHistoryStatus = 'loading';
+        state.orderItemsHistoryError = null;
+      })
+      .addCase(fetchOrdersItem.fulfilled, (state, action) => {
+        state.orderItemsHistoryStatus = 'succeeded';
+        state.orderItemsHistoryError = null;
+        state.orderItemsHistory = action.payload;
+      })
+      .addCase(fetchOrdersItem.rejected, (state, action) => {
+        state.orderItemsHistoryStatus = 'failed';
+        state.orderItemsHistoryError = 'Failed to fetch your order! Please retry again later.';
+      })
   }
 });
 
@@ -73,3 +116,6 @@ export default orderSlice.reducer;
 export const selectAllOrderItems = (state) => state.orders.orderItems;
 export const selectOrderItemsStatus = (state) => state.orders.orderItemsStatus;
 export const selectOrderItemsError = (state) => state.orders.orderItemsError;
+export const selectAllOrderItemsHistory = (state) => state.orders.orderItemsHistory;
+export const selectAllOrderItemsHistoryStatus = (state) => state.orders.orderItemsHistoryStatus;
+export const selectAllOrderItemsHistoryError = (state) => state.orders.orderItemsHistoryError;

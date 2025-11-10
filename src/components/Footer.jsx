@@ -51,9 +51,10 @@ const Footer = () => {
           <div className="flex flex-col space-y-5">
             <Link to={"/"}>
               {/* Use a strong primary color (e.g., indigo-600) and bolder font for a modern brand look */}
-              <h2 className="text-3xl lg:text-4xl font-extrabold text-indigo-600 hover:text-indigo-800 transition duration-300">
+              {/* <h2 className="text-3xl lg:text-4xl font-extrabold text-indigo-600 hover:text-indigo-800 transition duration-300">
                 T.shop
-              </h2>
+              </h2> */}
+              <img src="../../images/footer-logo.png" alt="navbar-logo" className="object-cover w-[200px] h-20"/>
             </Link>
             <p className="md:text-base text-sm max-w-sm text-gray-500">
               Lorem ipsum dolor sit amet consectetur adipisicing elit. Voluptate
