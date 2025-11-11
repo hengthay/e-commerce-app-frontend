@@ -24,7 +24,7 @@ const OrderHistory = () => {
   return (
     <section className="section-container max-w-6xl max-sm:w-[350px] mx-auto md:px-6 py-8 lg:py-12 flex flex-col gap-8 md:my-10 my-14">
       <div className="w-full mt-10 flex flex-col justify-center mx-auto">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gray-900 mb-6">
+        <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 mb-6">
           My Orders
         </h1>
 

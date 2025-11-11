@@ -141,7 +141,7 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
           </Link>
           <span className="md:flex hidden text-gray-400">|</span>
           {/* Authentication Links - clear visual separation and hover effect */}
-          <div className="hidden sm:flex items-center text-gray-600">
+          <div className="flex items-center text-gray-600">
             {" "}
             {/* Hide on small screens to save space */}
             {user ? (
@@ -187,13 +187,20 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
           {/* Tooltip of user setting */}
           {isOpenMenu && (
             <div
-              className={`flex flex-col justify-start items-start absolute bg-white w-[250px] -bottom-38 h-auto right-0 rounded-lg py-2 px-3 transition-all ease-in-out border border-gray-300 space-y-3 transform ${
+              className={`flex flex-col justify-start items-start absolute bg-white w-[250px] -bottom-50 h-auto right-0 rounded-lg py-2 px-3 transition-all ease-in-out border border-gray-300 space-y-3 transform ${
                 isOpenMenu ? "opacity-100" : "opacity-0"
               }`}
             >
               <span className="text-gray-800 text-base text-nowrap hover:bg-gray-200 transition-colors duration-300 w-full py-1.5 px-2 font-medium">
                 {user?.email}
               </span>
+              <Link
+                to={"/order"}
+                className="text-nowrap text-base hover:bg-gray-200 transition-colors duration-300 w-full py-1.5 px-2"
+              >
+                {/* <LiaUserLockSolid size={28} /> */}
+                My Order
+              </Link>
               <Link
                 to={"/profile"}
                 className="text-nowrap text-base hover:bg-gray-200 transition-colors duration-300 w-full py-1.5 px-2"

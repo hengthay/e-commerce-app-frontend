@@ -59,7 +59,7 @@ const OrderHistoryCard = ({ orderItem, order }) => {
             </div>
 
             <Link
-              to={"/"}
+              to={`/tracking-order/${order.orderId}`}
               className="sm:w-50 w-full flex justify-center items-center gap-2 px-4 py-2 rounded-md border border-gray-200 bg-white md:text-lg text-base font-medium text-gray-800 hover:shadow transitio"
             >
               {/* Icon placeholder */}
