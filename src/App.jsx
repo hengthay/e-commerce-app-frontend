@@ -19,6 +19,7 @@ import { useDispatch } from 'react-redux'
 import { fetchCarts } from './features/carts/cartSlice'
 import NotFound from './pages/NotFound'
 import TrackingOrder from './pages/TrackingOrder'
+import EditProfile from './components/Profile/EditProfile'
 
 const App = () => {
   // Set hamburger button for navbar
@@ -59,6 +60,7 @@ const App = () => {
         <Route element={<ProtectedRoutes />}>
           <Route path="/checkout" element={<Checkout />} />
           <Route path="/profile" element={<Profile />} />
+          <Route path='/profile/edit' element={<EditProfile />} />
           <Route path="/order" element={<OrderHistory />} />
         </Route>
         {/* Handle on page not found */}

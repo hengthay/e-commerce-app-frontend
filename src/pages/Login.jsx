@@ -14,6 +14,7 @@ import { PiUserFocus } from "react-icons/pi";
 import EyeToggleIcon from "../components/Helpers/EyeToggleIcon";
 import axios from "axios";
 
+
 const Login = () => {
   // State and action
   const dispatch = useDispatch();
@@ -142,7 +143,6 @@ const Login = () => {
   };
 
   // console.log('Form Data: ', formData);
-
   return (
     <section className="bg-gray-200 w-screen h-screen flex mx-auto justify-center items-center">
       <div className="sm:w-[450px] w-[350px] mx-4 container bg-white/90 space-y-3 py-3 rounded-lg shadow-md">
@@ -235,7 +235,9 @@ const Login = () => {
               className="bg-black text-white w-[250px] py-1.5 rounded-md font-medium cursor-pointer border border-transparent hover:bg-transparent hover:text-black hover:border hover:border-black transition-colors ease-in-out duration-300"
               aria-label="Login button"
             >
-              {isLoading ? "loading" : "Login"}
+              {isLoading ? (
+                <p>Loading {" "}<span className="animate-pulse duration-300">...</span></p>
+              ) : "Login"}
             </button>
           </div>
           <div className="flex flex-col space-y-2">
