@@ -11,7 +11,10 @@ import {
 } from "../features/auth/authSlice";
 import { useState } from "react";
 import { selectCartItemsQuantity } from "../features/carts/cartSlice";
-import { selectSearchTerm, setSearchItemName } from "../features/search/searchSlice";
+import {
+  selectSearchTerm,
+  setSearchItemName,
+} from "../features/search/searchSlice";
 
 const NavBar = ({ isOpen, handleOpenMenu }) => {
   const user = useSelector(selectUser);
@@ -65,7 +68,7 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
         ></div>
       )}
       {/* Container - use max-w-7xl for a wider desktop feel, center it, and add more vertical padding */}
-      <div className="max-w-[1400px] mx-auto flex justify-between items-center py-4 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-[1400px] mx-auto flex justify-between items-center py-4 px-2 sm:px-6 lg:px-8">
         {/* Logo */}
         <div className="flex shrink-0">
           <Link to={"/"}>
@@ -73,7 +76,11 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
             {/* <h2 className="text-3xl lg:text-4xl font-extrabold text-indigo-600 hover:text-indigo-800 transition duration-300">
               T.shop
             </h2> */}
-            <img src="../../images/navbar-logo.png" alt="" className="object-cover w-[150px] h-[50px]"/>
+            <img
+              src="../../images/navbar-logo.png"
+              alt=""
+              className="object-cover w-[150px] h-[50px]"
+            />
           </Link>
         </div>
         {/* Search Bar - Larger, more prominent, and centered */}{" "}

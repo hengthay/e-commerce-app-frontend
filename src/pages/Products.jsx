@@ -38,18 +38,21 @@ const Products = () => {
 
   // console.log('Products: ', products);
   // Memoize normalized search string to avoid repeated lowercasing
-  const normalizedSearch = useMemo(() => searchTerm.trim().toLowerCase(), [searchTerm]);
+  const normalizedSearch = useMemo(
+    () => searchTerm.trim().toLowerCase(),
+    [searchTerm]
+  );
   // Filtered Product title
   const filteredProducts = useMemo(() => {
     // Filtered Label Product
     const filteredByLabel = products.filter((product) => {
-      return selectedType === "All" ? product : product.type === selectedType
+      return selectedType === "All" ? product : product.type === selectedType;
     });
     // Filtered by title
     return filteredByLabel.filter((product) => {
       const title = (product?.title || "").toLowerCase();
-      return title.includes(normalizedSearch)
-    })
+      return title.includes(normalizedSearch);
+    });
   }, [products, normalizedSearch, selectedType]);
 
   return (
@@ -90,19 +93,21 @@ const Products = () => {
                 <ProductCard product={product} key={product.id} />
               ))
             ) : (
-              <ErrorMessage message="No products are found."/>
+              <ErrorMessage
+                message={"No products are found." || errorMessage}
+              />
             )}
-            
           </div>
         )}
         {/* Handle status */}
         {status === "failed" && (
-          <ErrorMessage message="Sorry, failed to display products"/>
+          <ErrorMessage message="Sorry, failed to display products" />
         )}
         {status === "loading" && (
           <div className="flex justify-center items-center h-64">
             <h4 className="text-gray-700 font-medium md:text-lg text-base flex items-center gap-x-2">
-              Loading<p className="w-6 h-6 rounded-full border-b-transparent border-t-transparent border-2 border-gray-400 animate-spin"></p>
+              Loading
+              <p className="w-6 h-6 rounded-full border-b-transparent border-t-transparent border-2 border-gray-400 animate-spin"></p>
             </h4>
           </div>
         )}
