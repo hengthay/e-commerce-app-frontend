@@ -3,7 +3,7 @@ import CartCard from '../components/Carts/CartCard'
 import { Link } from 'react-router-dom'
 import { IoArrowForwardSharp } from "react-icons/io5";
 import { useDispatch, useSelector } from 'react-redux';
-import { decreaseCartQuantity, decreaseGuestCartQuantity, fetchCarts, increaseCartQuantity, increaseGuestCartQuantity, loadGuestCarts, removeGuestItemFromCart, removeItemFromCart, selectCartDelivery, selectCartItemsStatus, selectCartSubtotal } from '../features/carts/cartSlice';
+import { decreaseCartQuantity, decreaseGuestCartQuantity, fetchCarts, increaseCartQuantity, increaseGuestCartQuantity, loadGuestCarts, removeGuestItemFromCart, removeItemFromCart, resetCart, selectCartDelivery, selectCartItemsStatus, selectCartSubtotal } from '../features/carts/cartSlice';
 import { selectUserToken } from '../features/auth/authSlice';
 import EmptyCart from '../components/Carts/EmptyCart';
 
@@ -23,6 +23,9 @@ const Cart = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     try {
+      // Always resetCart
+      dispatch(resetCart());
+      
       if(token) {
         dispatch(fetchCarts())
       }else {

@@ -66,7 +66,7 @@ export const registerUser = createAsyncThunk(
       // Check if register not presents
       if(!res.data) return thunkAPI.rejectWithValue('Unable to register user');
             
-      console.log('Register response: ', res.data.data);
+      // console.log('Register response: ', res.data.data);
 
       return res.data?.data;
     } catch (error) {

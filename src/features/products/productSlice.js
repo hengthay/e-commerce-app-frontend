@@ -21,7 +21,7 @@ export const recommendedProducts = createAsyncThunk(
 
       if(!res?.data?.data) return thunkAPI.rejectWithValue('Error to get recommended products');
 
-      console.log('Data', res.data.data);
+      // console.log('Data', res.data.data);
 
       return res.data.data ?? [];
     } catch (error) {
@@ -39,7 +39,7 @@ export const fetchProducts = createAsyncThunk(
 
       if(!res?.data) return thunkAPI.rejectWithValue('Failed to fetched all products');
 
-      console.log('Data---', res.data.data);
+      // console.log('Data---', res.data.data);
 
       return res?.data?.data ?? [];
     } catch (error) {
@@ -61,7 +61,7 @@ export const getProductDetailById = createAsyncThunk(
 
       if(!res?.data) return thunkAPI.rejectWithValue(`Failed to get product with id:${id}`);
 
-      console.log('Product Details: ', res.data.data);
+      // console.log('Product Details: ', res.data.data);
 
       return res.data.data;
     } catch (error) {

@@ -68,7 +68,7 @@ export const addToCart = createAsyncThunk(
         return thunkAPI.rejectWithValue('Failed to add a product to cart')
       };
 
-      console.log('Added Product to Cart Successful', addProduct.data);
+      // console.log('Added Product to Cart Successful', addProduct.data);
 
       // ✅ Fetch the full cart after adding
       const res = await axios.get('http://localhost:3000/api/cart', { headers: {Authorization: `Bearer ${token}`}}
@@ -102,8 +102,8 @@ export const decreaseCartQuantity = createAsyncThunk(
       if(!removeQuantity?.data) {
         return thunkAPI.rejectWithValue('Failed to decrease quantity');
       };
-      
-      console.log('Remove Quantity: ', removeQuantity.data);
+
+      // console.log('Remove Quantity: ', removeQuantity.data);
       // ✅ Fetch updated cart list
       const refresh = await axios.get(`http://localhost:3000/api/cart`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -141,7 +141,7 @@ export const increaseCartQuantity = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` }
       });
 
-      console.log('Cart Quantity after increase', refresh.data);
+      // console.log('Cart Quantity after increase', refresh.data);
 
       return refresh.data?.data?.items ?? [];
     } catch (error) {
@@ -171,7 +171,7 @@ export const removeItemFromCart = createAsyncThunk(
       if(!removeItemFromCart?.data) {
         return thunkAPI.rejectWithValue("Failed to remove cart item");
       }
-      console.log('Removing Cart- ', removeItemFromCart.data);
+      // console.log('Removing Cart- ', removeItemFromCart.data);
       
       const refresh = await axios.get(`http://localhost:3000/api/cart`, {
         headers: { Authorization: `Bearer ${token}` }
@@ -254,7 +254,8 @@ const cartSlice = createSlice({
 
        // Update localStorage
       localStorage.setItem('cartTemp', JSON.stringify(state.cartTempItems));
-    }
+    },
+    resetCart: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -339,7 +340,7 @@ const cartSlice = createSlice({
 })
 
 export default cartSlice.reducer;
-export const { loadGuestCarts, addGuestItems, increaseGuestCartQuantity, decreaseGuestCartQuantity, removeGuestItemFromCart } = cartSlice.actions;
+export const { loadGuestCarts, addGuestItems, increaseGuestCartQuantity, decreaseGuestCartQuantity, removeGuestItemFromCart, resetCart } = cartSlice.actions;
 export const selectAllCartItems = (state) => state.carts.cartItems;
 export const selectCartItemsStatus = (state) => state.carts.cartItemsStatus;
 export const selectCartItemsError = (state) => state.carts.cartItemsError;

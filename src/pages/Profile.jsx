@@ -28,17 +28,17 @@ const Profile = () => {
   }, [dispatch, token]);
 
   // convenience display vars (safe)
-  const name = profileData.name || "";
-  const role = profileData.role || "";
-  const email = profileData.email || "";
-  const phone = profileData.phone_number
-    ? profileData.phone_number.startsWith("+")
-      ? profileData.phone_number
-      : `+855 ${profileData.phone_number}`
+  const name = profileData?.name || "";
+  const role = profileData?.role || "";
+  const email = profileData?.email || "";
+  const phone = profileData?.phone_number
+    ? profileData?.phone_number.startsWith("+")
+      ? profileData?.phone_number
+      : `+855 ${profileData?.phone_number}`
     : "";
-  const street = profileData.street || "";
-  const city = profileData.city || "";
-  const country = profileData.country || "";
+  const street = profileData?.street || "";
+  const city = profileData?.city || "";
+  const country = profileData?.country || "";
 
   const hasAddress = Boolean(
     street || city || country || profileData.phone_number
@@ -75,7 +75,7 @@ const Profile = () => {
                       className="md:w-28 md:h-28 w-16 h-16 rounded-full shadow object-cover"
                     /> */}
                     <div className="md:w-28 md:h-28 w-16 h-16 rounded-full shadow object-cover flex justify-center bg-gray-200 items-center">
-                      <span className="md:text-4xl lg:text-5xl text-2xl">{name[0].toUpperCase()}</span>
+                      <span className="md:text-4xl lg:text-5xl text-2xl">{name[0]?.toUpperCase() || ""}</span>
                     </div>
                     <div className="flex flex-col justify-center space-y-1.5">
                       <h4 className="md:text-2xl text-xl font-semibold text-gray-900 text-start">

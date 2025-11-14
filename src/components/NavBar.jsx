@@ -9,8 +9,8 @@ import {
   selectUser,
   selectUserToken,
 } from "../features/auth/authSlice";
-import { useState } from "react";
-import { selectCartItemsQuantity } from "../features/carts/cartSlice";
+import { useEffect, useState } from "react";
+import { fetchCarts, loadGuestCarts, resetCart, selectCartItemsQuantity } from "../features/carts/cartSlice";
 import {
   selectSearchTerm,
   setSearchItemName,
@@ -23,6 +23,7 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
+  const token = localStorage.getItem('token');
   // Search Term
   const searchTerm = useSelector(selectSearchTerm);
   // const token = useSelector(selectUserToken);
@@ -43,6 +44,16 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
   const handleBlur = () => setField(null);
   const isFocus = field === "search";
 
+  useEffect(() => {
+    // Always reset cart
+    dispatch(resetCart())
+    if (token) {
+      dispatch(fetchCarts());
+    } else {
+      dispatch(loadGuestCarts());
+    }
+  }, [dispatch, token]);
+  
   // console.log(isFocus);
   // Menu of nav bars
   const menuItems = [
@@ -142,9 +153,11 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
           >
             <TbShoppingBagHeart size={28} />
             {/* Optional: Add a simple badge for item count */}
-            <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
-              {quantity}
-            </span>
+            {quantity > 0 && (
+              <span className="absolute top-1.5 right-0 inline-flex items-center justify-center px-1.5 py-1 text-xs font-bold leading-none text-red-100 transform translate-x-1/2 -translate-y-1/2 bg-red-600 rounded-full">
+                {quantity}
+              </span>
+            )}
           </Link>
           <span className="md:flex hidden text-gray-400">|</span>
           {/* Authentication Links - clear visual separation and hover effect */}

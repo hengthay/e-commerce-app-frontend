@@ -2,25 +2,31 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchOrdersItem,
+  resetOrderHistory,
   selectAllOrderItemsHistory,
   selectAllOrderItemsHistoryError,
   selectAllOrderItemsHistoryStatus,
 } from "../features/orders/orderSlice";
 import OrderHistoryCard from "../components/Orders/OrderHistoryCard";
 import ErrorMessage from "../components/ErrorHandle/ErrorMessage";
+import { Link } from "react-router-dom";
 
 const OrderHistory = () => {
   const dispatch = useDispatch();
   const orders = useSelector(selectAllOrderItemsHistory); // array of order objects
   const status = useSelector(selectAllOrderItemsHistoryStatus);
   const error = useSelector(selectAllOrderItemsHistoryError);
+  const token = localStorage.getItem('token');
 
   useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchOrdersItem());
+    if(!token) {
+      dispatch(resetOrderHistory());
     }
-  }, [dispatch, status]);
+    dispatch(resetOrderHistory());
+    dispatch(fetchOrdersItem());
+  }, [dispatch, token]);
 
+  // console.log("Status: ", status);
   return (
     <section className="section-container max-w-6xl max-sm:w-[350px] mx-auto md:px-6 py-8 lg:py-12 flex flex-col gap-8 md:my-10 my-14">
       <div className="w-full mt-10 flex flex-col justify-center mx-auto">
@@ -36,11 +42,28 @@ const OrderHistory = () => {
             </h4>
           </div>
         )}
-        {status === "failed" && <ErrorMessage message={error} />}
         {status === "succeeded" && (!orders || orders.length === 0) && (
-          <div className="p-4 bg-white rounded shadow">No orders yet.</div>
-        )}
+          <div className="p-10 bg-white rounded-xl shadow-sm flex flex-col items-center text-center">
+            <img
+              src="https://cdn-icons-png.flaticon.com/512/4076/4076549.png"
+              alt="Empty box"
+              className="w-24 h-24 opacity-80 mb-4"
+            />
 
+            <h2 className="text-xl font-bold text-gray-700">No orders found</h2>
+            <p className="text-gray-500 max-w-xs mt-2">
+              When you place your first order, it will show up here.
+            </p>
+
+            <Link
+              to={"/products"}
+              className="mt-5 px-5 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-100 transition"
+            >
+              Browse Products
+            </Link>
+          </div>
+        )}
+        {status === "failed" && <ErrorMessage message={error} />}
         {/* Render orders when succeeded */}
         {status === "succeeded" &&
           Array.isArray(orders) &&

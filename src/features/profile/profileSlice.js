@@ -26,7 +26,7 @@ export const getUserProfile = createAsyncThunk(
       // If data not present
       if(!res?.data) throw new Error('Error to load profile from backend');
       // Log success data
-      console.log('Profile info: ', res.data.data);
+      // console.log('Profile info: ', res.data.data);
       // Return data
       return res.data.data;
     } catch (error) {
@@ -67,7 +67,7 @@ export const updateUserProfileAddress = createAsyncThunk(
 
       if(!res?.data) return thunkAPI.rejectWithValue('Invalid response from server');
 
-      console.log('Updated Data Info-----', res.data);
+      // console.log('Updated Data Info-----', res.data);
 
       return res.data.data;
     } catch (error) {

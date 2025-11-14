@@ -40,7 +40,7 @@ export const placeOrder = createAsyncThunk(
 
        // HandleResponse wrapper pattern
       const backendData = res?.data?.data || res?.data;
-      console.log("✅ placeOrder backendData:", backendData);
+      // console.log("✅ placeOrder backendData:", backendData);
 
       // Return only the important payload (stripe + order)
       return {
@@ -77,7 +77,7 @@ export const getOrderStatus = createAsyncThunk(
       const orderData = res?.data?.data;
       if(!orderData) return thunkAPI.rejectWithValue('Invalid Response from API');
 
-      console.log('Order Status Data: ', orderData);
+      // console.log('Order Status Data: ', orderData);
 
       return orderData;
     } catch (error) {
@@ -107,11 +107,22 @@ export const fetchOrdersItem = createAsyncThunk(
       });
 
       if(!res?.data?.data) return thunkAPI.rejectWithValue('Error to fetch orders');
-      console.log('Order Received - ', res.data.data);
-
+      // If the API returns success but no data, return empty array
+      if (!res?.data?.data) {
+        // Some APIs may return 200 with empty array or 204; normalize to []
+        return [];
+      }
+      // console.log('Order Received - ', res.data.data);
+      
       return res.data.data ?? [];
     } catch (error) {
       console.log('Error to fetch order items: ', error);
+      // If API returned 404 -> treat as "no orders" and resolve with empty array
+      const status = error.response?.status;
+      if (status === 404) {
+        // fulfillWithValue returns a fulfilled action with this payload
+        return thunkAPI.fulfillWithValue([]);
+      }
       const message =
         error.response?.data?.message ||
         error.message ||
@@ -124,7 +135,7 @@ const orderSlice = createSlice({
   name: "orders",
   initialState,
   reducers: {
-
+    resetOrderHistory: () => initialState,
   },
   extraReducers: (builder) => {
     builder
@@ -150,7 +161,7 @@ const orderSlice = createSlice({
       .addCase(fetchOrdersItem.fulfilled, (state, action) => {
         state.orderItemsHistoryStatus = 'succeeded';
         state.orderItemsHistoryError = null;
-        state.orderItemsHistory = action.payload;
+        state.orderItemsHistory = action.payload ?? [];
       })
       .addCase(fetchOrdersItem.rejected, (state, action) => {
         state.orderItemsHistoryStatus = 'failed';
@@ -176,6 +187,7 @@ const orderSlice = createSlice({
 });
 
 export default orderSlice.reducer;
+export const { resetOrderHistory } = orderSlice.actions;
 export const selectAllOrderItems = (state) => state.orders.orderItems;
 export const selectOrderItemsStatus = (state) => state.orders.orderItemsStatus;
 export const selectOrderItemsError = (state) => state.orders.orderItemsError;
