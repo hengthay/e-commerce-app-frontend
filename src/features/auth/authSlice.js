@@ -45,13 +45,17 @@ export const loginUser = createAsyncThunk(
     };
   } catch (error) {
     console.log('Error to get login to page: ', error);
-    throw new Error("Couldn't be fetch from the backend source. (Please double check your spelling or maybe resource is not exist)");    
+    const message =
+      error.response?.data?.message ||
+      error.message ||
+      "Error to get login to page";
+    return thunkAPI.rejectWithValue(message)    
   }
 })
 
 // Performance on User Register 
 export const registerUser = createAsyncThunk(
-  'auth/register', async ({ name, email, password}) => {
+  'auth/register', async ({ name, email, password}, thunkAPI) => {
     try {
       // Send Request to API for register user
       const res = await axios.post('http://localhost:3000/api/auth/register', {
@@ -60,14 +64,18 @@ export const registerUser = createAsyncThunk(
         password
       })
       // Check if register not presents
-      if(!res) return console.log('Unable to register user');
+      if(!res.data) return thunkAPI.rejectWithValue('Unable to register user');
             
       console.log('Register response: ', res.data.data);
 
-      return res.data;
+      return res.data?.data;
     } catch (error) {
       console.log('Error to register: ', error);
-      throw new Error("Couldn't be fetch from the backend source. (Please double check your spelling or maybe resource is not exist)");    
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error to register account";
+      return thunkAPI.rejectWithValue(message)
     }
 })
 const authSlice = createSlice({

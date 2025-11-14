@@ -24,14 +24,18 @@ export const getUserProfile = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}` }
       });
       // If data not present
-      if(!res.data) throw new Error('Error to load profile from backend');
+      if(!res?.data) throw new Error('Error to load profile from backend');
       // Log success data
       console.log('Profile info: ', res.data.data);
       // Return data
       return res.data.data;
     } catch (error) {
-      console.log('Erorr to load profile', error.stack);
-      return thunkAPI.rejectWithValue('Error to load profile', error);
+      console.log('Erorr to load profile', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        'Error to load profile';
+      return thunkAPI.rejectWithValue(message)
     }
   }
 )
@@ -67,8 +71,12 @@ export const updateUserProfileAddress = createAsyncThunk(
 
       return res.data.data;
     } catch (error) {
-      console.log('Erorr to updated profile', error.stack);
-      return thunkAPI.rejectWithValue('Error to updated profile', error);
+      console.log('Erorr to updated profile', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        'Erorr to updated profile';
+      return thunkAPI.rejectWithValue(message)
     }
   }
 )

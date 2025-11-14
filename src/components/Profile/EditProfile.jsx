@@ -102,7 +102,6 @@ const EditProfile = () => {
       setSaving(false);
     }
   };
-
   // console.log('FormData--', formData);
   return (
     <section className="section-container max-w-4xl max-sm:w-[350px] mx-auto md:px-8 py-10 lg:py-14 flex flex-col items-center gap-8 md:my-10 my-14">
@@ -123,13 +122,16 @@ const EditProfile = () => {
         {profileStatus === "succeeded" && (
           <>
             {/* Profile Image */}
-            <div className="flex flex-col justify-center items-center mx-auto sm:w-28 sm:h-28 w-20 h-20 rounded-full shadow-sm mb-6">
+            {/* <div className="flex flex-col justify-center items-center mx-auto sm:w-28 sm:h-28 w-20 h-20 rounded-full shadow-sm mb-6"> */}
               {/* Profile Image */}
-              <img
+              {/* <img
                 src="https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001877.png"
                 alt="Profile"
                 className="w-full h-full object-cover"
-              />
+              /> */}
+            {/* </div> */}
+            <div className="md:w-28 md:h-28 w-16 h-16 rounded-full shadow object-cover flex justify-center bg-gray-200 items-center mx-auto mb-6">
+              <span className="md:text-4xl lg:text-5xl text-2xl">{formData?.name[0]?.toUpperCase() || ""}</span>
             </div>
             {/* Form */}
             <form className="grid grid-cols-1 md:grid-cols-2 gap-6">

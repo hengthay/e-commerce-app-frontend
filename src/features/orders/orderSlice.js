@@ -36,10 +36,10 @@ export const placeOrder = createAsyncThunk(
       // Send request to backend to make a place order
       const res = await axios.post(`http://localhost:3000/api/orders/checkout`, {street, city, country, postal_code, phone_number}, { headers: {Authorization: `Bearer ${token}`} });
 
-      if(!res) return new Error('Error to place order');
+      if(!res?.data) return thunkAPI.rejectWithValue('Error to place order');
 
        // HandleResponse wrapper pattern
-      const backendData = res.data.data || res.data;
+      const backendData = res?.data?.data || res?.data;
       console.log("✅ placeOrder backendData:", backendData);
 
       // Return only the important payload (stripe + order)
@@ -49,7 +49,11 @@ export const placeOrder = createAsyncThunk(
       };
     } catch (error) {
       console.log('Error to make place order: ', error);
-      return thunkAPI.rejectWithValue('Error to make a place order: ', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error to make place order";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 )
@@ -70,15 +74,19 @@ export const getOrderStatus = createAsyncThunk(
       const res = await axios.get(`http://localhost:3000/api/orders/${orderId}/track-order`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      const orderData = res.data?.data;
-      if(!orderData) throw new Error('Invalid API response');
+      const orderData = res?.data?.data;
+      if(!orderData) return thunkAPI.rejectWithValue('Invalid Response from API');
 
       console.log('Order Status Data: ', orderData);
 
       return orderData;
     } catch (error) {
       console.log('Error to get order status: ', error);
-      return thunkAPI.rejectWithValue('Error to get order status: ', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error to get order status";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 )
@@ -98,13 +106,17 @@ export const fetchOrdersItem = createAsyncThunk(
         headers: { Authorization: `Bearer ${token}`}
       });
 
-      if(!res.data) return new Error('Error to fetch orders');
-      // console.log('Order Received - ', res.data.data);
+      if(!res?.data?.data) return thunkAPI.rejectWithValue('Error to fetch orders');
+      console.log('Order Received - ', res.data.data);
 
-      return res.data.data;
+      return res.data.data ?? [];
     } catch (error) {
-      console.log('Error to fetch order items : ', error);
-      return thunkAPI.rejectWithValue('Error to fetch order items : ', error);
+      console.log('Error to fetch order items: ', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error to fetch order items";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 )

@@ -66,14 +66,17 @@ const Profile = () => {
                 <div className="w-full flex flex-col md:flex-row justify-between shadow py-6 px-6 md:px-8 rounded-lg gap-6">
                   {/* Image + Info */}
                   <div className="flex md:flex-row flex-col sm:items-center items-start gap-x-6 w-full md:w-auto space-y-2">
-                    <img
+                    {/* <img
                       src={
                         profileData.avatar ||
                         "https://png.pngtree.com/png-clipart/20230927/original/pngtree-man-avatar-image-for-profile-png-image_13001877.png"
                       }
                       alt="Avatar-User"
                       className="md:w-28 md:h-28 w-16 h-16 rounded-full shadow object-cover"
-                    />
+                    /> */}
+                    <div className="md:w-28 md:h-28 w-16 h-16 rounded-full shadow object-cover flex justify-center bg-gray-200 items-center">
+                      <span className="md:text-4xl lg:text-5xl text-2xl">{name[0].toUpperCase()}</span>
+                    </div>
                     <div className="flex flex-col justify-center space-y-1.5">
                       <h4 className="md:text-2xl text-xl font-semibold text-gray-900 text-start">
                         {name}

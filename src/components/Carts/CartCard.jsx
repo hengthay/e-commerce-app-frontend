@@ -18,8 +18,9 @@ const CartCard = ({ item, handleDecreaseQuantity, handleIncreaseQuantity, handle
       <td className="py-4 px-4 text-center">
         <div className="flex justify-center items-center bg-white rounded border border-gray-300 w-[140px] mx-auto gap-x-1.5">
           <button 
+          disabled={item.quantity === 1}
           onClick={() => handleDecreaseQuantity(item.id, 1)}
-          className="p-2 hover:text-red-500 transition">
+          className="p-2 hover:text-red-500 transition disabled:opacity-50 disabled:cursor-not-allowed">
             <IoRemove size={20} />
           </button>
           <input

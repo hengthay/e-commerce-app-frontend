@@ -28,14 +28,20 @@ export const fetchCarts = createAsyncThunk(
         headers: {Authorization: `Bearer ${token}`}
       });
 
-      if(!res) return new Error('Error to receive carts items from backend');
+      if(!res || !res.data?.data?.items) {
+        return thunkAPI.rejectWithValue("Invalid cart response");
+      }
 
       // console.log('Cart Items: ', res.data.data.items);
 
-      return res.data.data.items;
+      return res.data.data.items ?? [];
     } catch (error) {
       console.log('Error to get carts: ', error);
-      return thunkAPI.rejectWithValue('Error to get carts: ', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Failed to load carts";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -58,7 +64,9 @@ export const addToCart = createAsyncThunk(
         headers: {Authorization: `Bearer ${token}`}
       });
 
-      if(!addProduct) return new Error('Failed to add a product to cart');
+      if(!addProduct.data) {
+        return thunkAPI.rejectWithValue('Failed to add a product to cart')
+      };
 
       console.log('Added Product to Cart Successful', addProduct.data);
 
@@ -66,10 +74,14 @@ export const addToCart = createAsyncThunk(
       const res = await axios.get('http://localhost:3000/api/cart', { headers: {Authorization: `Bearer ${token}`}}
       );
 
-      return res.data.data.items;
+      return res.data?.data?.items ?? [];
     } catch (error) {
       console.log('Error to add product to cart: ', error);
-      return thunkAPI.rejectWithValue('Error to add to cart: ', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error adding product to cart";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -87,8 +99,10 @@ export const decreaseCartQuantity = createAsyncThunk(
       // Send request to backend.
       const removeQuantity = await axios.put(`http://localhost:3000/api/cart/remove/${productId}`, {quantityToRemove: Number(quantityToRemove)}, { headers: {Authorization: `Bearer ${token}`}});
 
-      if(!removeQuantity) return new Error('Failed to decrease quantity');
-
+      if(!removeQuantity?.data) {
+        return thunkAPI.rejectWithValue('Failed to decrease quantity');
+      };
+      
       console.log('Remove Quantity: ', removeQuantity.data);
       // ✅ Fetch updated cart list
       const refresh = await axios.get(`http://localhost:3000/api/cart`, {
@@ -97,10 +111,14 @@ export const decreaseCartQuantity = createAsyncThunk(
 
       console.log('Cart Quantity after decrease', refresh.data);
       // If data is undefined return empty array.
-      return refresh.data.data?.items || [];
+      return refresh.data?.data?.items || [];
     } catch (error) {
       console.log('Erorr to decrease quantity :', error);
-      return thunkAPI.rejectWithValue('Error to decrease quantity: ', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error decreasing cart quantity";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -125,10 +143,14 @@ export const increaseCartQuantity = createAsyncThunk(
 
       console.log('Cart Quantity after increase', refresh.data);
 
-      return refresh.data.data.items;
+      return refresh.data?.data?.items ?? [];
     } catch (error) {
       console.log('Error to increase cart quantity :', error);
-      return thunkAPI.rejectWithValue('Error to increase cart: ', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error increasing cart quantity";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );
@@ -146,7 +168,9 @@ export const removeItemFromCart = createAsyncThunk(
 
       const removeItemFromCart = await axios.delete(`http://localhost:3000/api/cart/delete/${productId}`, { headers: {Authorization: `Bearer ${token}`}});
 
-      if(!removeItemFromCart) return new Error('Failed to remove cart');
+      if(!removeItemFromCart?.data) {
+        return thunkAPI.rejectWithValue("Failed to remove cart item");
+      }
       console.log('Removing Cart- ', removeItemFromCart.data);
       
       const refresh = await axios.get(`http://localhost:3000/api/cart`, {
@@ -155,10 +179,14 @@ export const removeItemFromCart = createAsyncThunk(
 
       console.log('Cart Quantity after remove', refresh.data);
       // ✅ Return empty array if cart not found
-      return refresh.data.data?.items || [];
+      return refresh.data?.data?.items ?? [];
     } catch (error) {
       console.log('Error to remove cart : ', error);
-      return thunkAPI.rejectWithValue('Error to remove cart item: ', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        "Error removing cart item";
+      return thunkAPI.rejectWithValue(message);
     }
   }
 );

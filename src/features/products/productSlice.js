@@ -19,12 +19,11 @@ export const recommendedProducts = createAsyncThunk(
     try {
       const res = await axios.get(`http://localhost:3000/api/products/recommend-products`);
 
-      if(!res) return new Error('Error to get products');
+      if(!res?.data?.data) return thunkAPI.rejectWithValue('Error to get recommended products');
 
-      // console.log('Data', res.data.data);
+      console.log('Data', res.data.data);
 
-      return res.data.data;
-
+      return res.data.data ?? [];
     } catch (error) {
       console.log(error);
       return thunkAPI.rejectWithValue("Failed to fetched products from backend: ", error);
@@ -38,14 +37,18 @@ export const fetchProducts = createAsyncThunk(
       // Send a request to backend to fetching products
       const res = await axios.get('http://localhost:3000/api/products');
 
-      if(!res) return new Error('Failed to fetched all products');
+      if(!res?.data) return thunkAPI.rejectWithValue('Failed to fetched all products');
 
-      // console.log('Data---', res.data.data);
+      console.log('Data---', res.data.data);
 
-      return res.data.data;
+      return res?.data?.data ?? [];
     } catch (error) {
       console.log('Error Message: ', error);
-      return thunkAPI.rejectWithValue("Failed to fetched all products from backend: ", error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        `Error to get products from API`;
+      return thunkAPI.rejectWithValue(message)
     }
   }
 );
@@ -56,14 +59,18 @@ export const getProductDetailById = createAsyncThunk(
       // Send a request to backend to get product by id
       const res = await axios.get(`http://localhost:3000/api/products/${id}`);
 
-      if(!res) return new Error(`Failed to get product with id:${id}`);
+      if(!res?.data) return thunkAPI.rejectWithValue(`Failed to get product with id:${id}`);
 
-      // console.log('Product Details: ', res.data.data);
+      console.log('Product Details: ', res.data.data);
 
       return res.data.data;
     } catch (error) {
       console.log(`Error to get product details with id:${id} -`, error);
-      return thunkAPI.rejectWithValue('Error to get product details by id', error);
+      const message =
+        error.response?.data?.message ||
+        error.message ||
+        `Error to get product details with id:${id}`;
+      return thunkAPI.rejectWithValue(message)
     }
   }
 )
