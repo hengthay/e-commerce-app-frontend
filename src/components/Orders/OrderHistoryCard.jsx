@@ -33,7 +33,7 @@ const OrderHistoryCard = ({ orderItem, order }) => {
               <p className="md:text-lg text-base text-gray-500">
                 Price:{" "}
                 <span className="text-gray-800 font-medium">
-                  ${orderItem.product_price}
+                  ${orderItem.product_price.toFixed(2)}
                 </span>
               </p>
             </div>

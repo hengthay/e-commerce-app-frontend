@@ -12,7 +12,6 @@ import Swal from "sweetalert2";
 import StripeCheckout from "../components/StripeCheckout";
 import axios from "axios";
 import Paypal from "../components/Paypal";
-import PayPalLoader from "../components/Helpers/PayPalLoader";
 
 const Checkout = () => {
   // Redux State
@@ -25,13 +24,13 @@ const Checkout = () => {
   console.log(cartItems);
   // State
   const [formData, setFormData] = useState({
-    street: "",
-    city: "",
-    country: "",
-    postal_code: "",
-    phone_number: "",
-    fullname: "",
-    email: "",
+    street: "123 Main Street",
+    city: "San Jose",
+    country: "US",
+    postal_code: "95131",
+    phone_number: "408-555-1234",
+    fullname: "Kim Thay",
+    email: "kimthay@gmail.com",
   });
   // Onsuccess
   const onSuccess = () => {

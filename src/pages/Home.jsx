@@ -16,6 +16,7 @@ import testimonialsData from "../utils/testimonialsData";
 import WhyChooseUs from "../components/Helpers/WhyChooseUs";
 import { selectSearchTerm } from "../features/search/searchSlice";
 import ErrorMessage from "../components/ErrorHandle/ErrorMessage";
+import { fetchCarts, loadGuestCarts, resetCart } from "../features/carts/cartSlice";
 
 const Home = () => {
   const products = useSelector(selectRecommendedProducts);
@@ -23,6 +24,7 @@ const Home = () => {
   const status = useSelector(selectRecommendedProductStatus);
   const searchTerm = useSelector(selectSearchTerm) || "";
   const errorMessage = useSelector(selectRecommendedProductError);
+  const token = localStorage.getItem('token');
   // Track of index
   const [currentIndex, setCurrentIndex] = useState(0);
 
@@ -70,7 +72,21 @@ const Home = () => {
     })
   }, [products, normalizedSearch])
 
-
+  // Alway fetch cart.
+  useEffect(() => {
+      try {
+        // Always resetCart
+        dispatch(resetCart());
+        
+        if(token) {
+          dispatch(fetchCarts())
+        }else {
+          dispatch(loadGuestCarts())
+        }
+      } catch (error) {
+        console.log('Error', error);
+      }
+    }, [dispatch, token]);
   return (
     <section className="w-full overflow-hidden">
       {/* Banner */}
