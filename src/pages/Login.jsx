@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import {
+  googleSigninUser,
   loginUser,
   selectAuthError,
   selectAuthStatus,
@@ -142,6 +143,77 @@ const Login = () => {
     });
   };
 
+  // Google sign in
+  const handleGoogleCredentialResponse = async (response) => {
+    try {
+      // Extract the ID token from Google's response
+      // This token contains encoded user information (email, name, picture, etc.)
+      const idToken = response.credential;
+      // If idToken is not present.
+      if(!idToken) return;
+      // Redux action to performance send idToken to backend
+      const result = await dispatch(googleSigninUser(idToken)).unwrap();
+      // console.log("Token received:", result.token); // should log the token
+      // If authentication successful, handle cart synchronization
+      if (result?.token) {
+        const guestCartItems =
+          JSON.parse(localStorage.getItem("cartTemp")) || [];
+        // Check if guestCartItems is greater than 0
+        if (guestCartItems.length > 0) {
+          await axios.post(
+            "http://localhost:3000/api/cart/sync",
+            {
+              // Loop through guestItem and assign productId and quantity to match backend.
+              items: guestCartItems.map((item) => ({
+                productId: item.id,
+                quantity: item.quantity
+              })),
+            },
+            { headers: { Authorization: `Bearer ${result.token}` } }
+          );
+
+          // Remove guest cart from localstorage
+          localStorage.removeItem("cartTemp");
+          console.log("Guest cart synced to user cart successfully!");
+        }
+      }
+
+      Swal.fire({
+        title: "Google Login Success",
+        text: `Welcome ${result?.user?.name}`,
+        icon: "success",
+      });
+
+      navigate("/");
+    } catch (error) {
+      console.error("Google login failed:", error);
+      Swal.fire({
+        title: "Google Login Failed",
+        text: error.response?.data?.message || "Something went wrong",
+        icon: "error",
+      });
+    }
+  };
+  /**
+   * Google Sign-In Button Initialization
+   * =====================================
+   * useEffect hook that runs once when component mounts.
+   * It initializes the Google Sign-In button and renders it on the page.
+  */
+  useEffect(() => {
+    /* global google */
+    // Initialize Google Sign-In with your client ID
+    window.google?.accounts.id.initialize({
+      client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID, // Your Google OAuth Client ID
+      callback: handleGoogleCredentialResponse, // Function to call on successful sign-in
+    });
+    // Render the Google Sign-In button in the specified HTML element
+    window.google?.accounts.id.renderButton(
+      document.getElementById("googleSignInDiv"),
+      { theme: "outline", size: "large", width: 250 }
+    );
+  }, []);
+
   // console.log('Form Data: ', formData);
   return (
     <section className="bg-gray-200 w-screen h-screen flex mx-auto justify-center items-center">
@@ -229,7 +301,7 @@ const Login = () => {
               shouldPasswordLabelFloat={shouldPasswordLabelFloat}
             />
           </div>
-          <div className="flex justify-center items-center space-y-2 mx-auto w-full">
+          <div className="flex flex-col justify-center items-center space-y-2 mx-auto w-full">
             <button
               type="submit"
               className="bg-black text-white w-[250px] py-1.5 rounded-md font-medium cursor-pointer border border-transparent hover:bg-transparent hover:text-black hover:border hover:border-black transition-colors ease-in-out duration-300"
@@ -239,6 +311,10 @@ const Login = () => {
                 <p>Loading {" "}<span className="animate-pulse duration-300">...</span></p>
               ) : "Login"}
             </button>
+            {/* Google Sign-In */}
+            <div className="flex justify-center my-2">
+              <div id="googleSignInDiv"></div>
+            </div>
           </div>
           <div className="flex flex-col space-y-2">
             <p className="text-black">

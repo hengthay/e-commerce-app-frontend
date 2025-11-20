@@ -78,6 +78,48 @@ export const registerUser = createAsyncThunk(
       return thunkAPI.rejectWithValue(message)
     }
 })
+
+// Google signin user
+export const googleSigninUser = createAsyncThunk(
+  '', async (idToken, thunkAPI) => {
+    try {
+      // console.log('idToken: ', idToken);
+      // Send request to backend for login with google
+      const res = await axios.post("http://localhost:3000/api/auth/google/token", { idToken });
+
+      // console.log('Google User data res: ', res.data.data);
+
+      if(!res?.data?.data) return console.log('Invalid API Response');
+
+      // Get user and token from response
+      const { user, token } = res.data.data;
+      // Check if user is not exist
+      if(!user) {
+        return thunkAPI.rejectWithValue("Google Login is not successful.");
+      };
+      // Check if token is not exist
+      if(!token) {
+        // Properly reject with a string error
+        return thunkAPI.rejectWithValue("No token received from backend");
+      }
+
+      // Decode token and get expiry time
+      const decodedToken = jwtDecode(token);
+      const expiresAt = decodedToken.exp;
+
+      localStorage.setItem("token", token);
+      // console.log('Google user auth: ', user);
+      return {
+        user,
+        token,
+        expiresAt
+      };
+    } catch (error) {
+      console.log('Google signin is failed: ', error);
+      return thunkAPI.rejectWithValue(error);
+    }
+  }
+)
 const authSlice = createSlice({
   name: "auth",
   initialState,
@@ -126,6 +168,25 @@ const authSlice = createSlice({
       })
       .addCase(registerUser.rejected, (state, action) => {
         state.status = 'failed';
+        state.error = action.payload;
+      })
+      // Google signin
+      .addCase(googleSigninUser.pending, (state) => {
+        state.status = 'loading';
+        state.error = null;
+      })
+      .addCase(googleSigninUser.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.error = null;
+        state.user = action.payload.user;
+        state.token = action.payload.token;
+        // Store user in localStorage
+        localStorage.setItem('user', JSON.stringify(action.payload.user));
+        // Set expiresAt time
+        localStorage.setItem('expiresAt', action.payload.expiresAt);
+      })
+      .addCase(googleSigninUser.rejected, (state, action) => {
+        state.status = 'failed',
         state.error = action.payload;
       })
   }
