@@ -43,7 +43,7 @@ const NavBar = ({ isOpen, handleOpenMenu }) => {
   const onFocus = (field) => setField(field);
   const handleBlur = () => setField(null);
   const isFocus = field === "search";
-
+  
   useEffect(() => {
     // Always reset cart
     dispatch(resetCart())
